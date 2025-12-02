@@ -1,0 +1,299 @@
+/* ============================
+   GLOBAL CSS FOR FIGMAKE ENV
+   ============================ */
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #c27aff;
+  --color-accent: #05df72;
+  --glass-bg: rgba(0,0,0,0.2);
+  --glass-border: rgba(255,255,255,0.2);
+  --glass-modal-bg: rgba(255,255,255,0.9);
+  --glass-light-bg: rgba(255,255,255,0.1);
+}
+
+/* ===============================
+   MOBILE VIEWPORT HEIGHT FIX
+   =============================== */
+
+:root {
+  --app-height: 100%;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+/* SAFE RESET (do NOT wipe padding) */
+*, :after, :before, ::backdrop {
+  box-sizing: border-box;
+  border-width: 0;
+  margin: 0;
+}
+
+/* ===============================
+   GLOBAL LAYOUT FIXES
+   =============================== */
+
+/* Allow natural document flow */
+html, body {
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;      /* kill horizontal scroll globally */
+  overflow-y: auto;        /* allow normal vertical scroll */
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Do NOT force #root height */
+#root {
+  width: 100%;
+  min-height: 100%;
+  overflow: visible;       /* allow proper child sizing */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Prevent components from blowing up layout */
+* {
+  box-sizing: border-box;
+}
+
+/* Make modals work correctly */
+.modal-container-fixed {
+  position: fixed;
+  inset: 0;
+  overflow: hidden !important;
+}
+
+/* Mobile-safe viewport */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    height: -webkit-fill-available;
+  }
+}
+
+/* ============================
+   CUSTOM SPACING UTILITIES
+   Figmake does NOT support 
+   space-y-* / gap-* reliably.
+   ============================ */
+
+/* Universal block spacing (like space-y-6) */
+.modal-gap-8 > * + * {
+  margin-top: 2rem; /* 32px */
+}
+
+.modal-gap-6 > * + * {
+  margin-top: 1.5rem; /* 24px */
+}
+
+.modal-gap-4 > * + * {
+  margin-top: 1rem; /* 16px */
+}
+
+.modal-gap-3 > * + * {
+  margin-top: 0.75rem; /* 12px */
+}
+
+.modal-gap-2 > * + * {
+  margin-top: 0.5rem; /* 8px */
+}
+
+/* Inner spacing inside cards */
+.card-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-section > * + * {
+  margin-top: 0.75rem; /* 12px */
+}
+
+/* Field group spacing */
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-group > * + * {
+  margin-top: 0.5rem; /* 8px */
+}
+
+/* ============================
+   RESPONSIVE MODAL HEIGHT
+   Figmake ignores Tailwind breakpoints.
+   ============================ */
+
+.modal-shell {
+  max-height: 75vh;
+}
+
+@media (min-width: 768px) {
+  .modal-shell {
+    max-height: 85vh;
+  }
+}
+
+/* Optional: smooth scrollbars */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.custom-scroll:hover,
+.custom-scroll:focus-within {
+  scrollbar-color: rgba(194, 122, 255, 0.4) transparent;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.custom-scroll:hover::-webkit-scrollbar-thumb,
+.custom-scroll:focus-within::-webkit-scrollbar-thumb {
+  background: rgba(194, 122, 255, 0.4);
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(194, 122, 255, 0.6);
+}
+
+/* ============================
+   CUSTOM ANIMATIONS
+   ============================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes rain {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0.3;
+  }
+}
+
+.animate-rain {
+  animation: rain linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+/* ============================
+   SCROLLBAR UTILITIES
+   ============================ */
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================
+   MOBILE OPTIMIZATIONS
+   ============================ */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Larger touch targets for mobile sliders */
+@media (max-width: 768px) {
+  input[type="range"]::-webkit-slider-thumb {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* ============================
+   AMBIENT BUTTON STYLES
+   ============================ */
+
+/* Ambient button styles - transparent on mobile, glassmorphic on desktop */
+.ambient-button {
+  background: transparent;
+  border: 1.5px solid transparent;
+  box-shadow: none;
+}
+
+@media (min-width: 768px) {
+  .ambient-button:not(.active-button) {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
