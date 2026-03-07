@@ -1,5 +1,5 @@
 import React from 'react';
-import { CloudRain, Building2, Flame, Bird, Coffee, Snowflake, Sparkles, Leaf, Stars } from 'lucide-react';
+import { CloudRain, Building2, Flame, Bird, Coffee, Snowflake, Zap, Leaf, Stars } from 'lucide-react';
 
 interface AmbientButtonProps {
   type: 'rain' | 'city' | 'fire' | 'birds' | 'cafe' | 'snow' | 'fireflies' | 'leaves' | 'stars';
@@ -16,7 +16,7 @@ export function AmbientButton({ type, isActive, onClick, style }: AmbientButtonP
     birds: Bird,
     cafe: Coffee, // Cafe murmuring / chatter
     snow: Snowflake,
-    fireflies: Sparkles,
+    fireflies: Zap, // Lightning bolt for glowing fireflies
     leaves: Leaf,
     stars: Stars
   };

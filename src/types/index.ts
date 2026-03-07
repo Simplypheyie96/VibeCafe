@@ -32,7 +32,7 @@ export interface CustomScene {
 export interface CustomPlaylist {
   id: number;
   name: string;
-  service: 'spotify' | 'apple-music';
+  service: 'spotify' | 'apple-music' | 'youtube' | 'soundcloud';
   url: string;
   embedId: string;
   sceneId: number | null; // Link to scene (null = not assigned)

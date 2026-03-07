@@ -120,20 +120,28 @@ export function MyPlaylistsModal({
                         <div className={`p-2 rounded-[10px] shrink-0 ${
                           playlist.service === 'spotify' 
                             ? 'bg-green-500/20' 
-                            : 'bg-pink-500/20'
+                            : playlist.service === 'apple-music'
+                              ? 'bg-pink-500/20'
+                              : playlist.service === 'youtube'
+                                ? 'bg-red-500/20'
+                                : 'bg-orange-500/20'
                         }`}>
                           <Music className={`size-4 ${
                             playlist.service === 'spotify' 
                               ? 'text-green-300' 
-                              : 'text-pink-300'
+                              : playlist.service === 'apple-music'
+                                ? 'text-pink-300'
+                                : playlist.service === 'youtube'
+                                  ? 'text-red-300'
+                                  : 'text-orange-300'
                           }`} strokeWidth={2} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-['Space_Grotesk',sans-serif] font-semibold text-[14px] text-white truncate mb-1.5">
+                          <p className="font-['Space_Grotesk',sans-serif] text-[14px] font-medium text-white truncate">
                             {playlist.name}
                           </p>
                           <p className="font-['Space_Grotesk',sans-serif] text-[12px] text-white/50">
-                            {playlist.service === 'spotify' ? 'Spotify' : 'Apple Music'}
+                            {playlist.service === 'spotify' ? 'Spotify' : playlist.service === 'apple-music' ? 'Apple Music' : playlist.service === 'youtube' ? 'YouTube' : 'SoundCloud'}
                           </p>
                         </div>
                       </div>

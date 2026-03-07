@@ -3,13 +3,51 @@ import { Music2 } from 'lucide-react';
 
 interface PlaylistButtonProps {
   name: string;
-  service: 'spotify' | 'apple-music';
+  service: 'spotify' | 'apple-music' | 'youtube' | 'soundcloud';
   isActive: boolean;
   onClick: () => void;
   style?: React.CSSProperties;
 }
 
 export function PlaylistButton({ name, service, isActive, onClick, style }: PlaylistButtonProps) {
+  // Get service colors
+  const getServiceColors = () => {
+    switch (service) {
+      case 'spotify':
+        return {
+          glow: 'bg-green-500/30',
+          gradient: 'from-green-500 to-green-600',
+          shadow: 'shadow-green-500/50'
+        };
+      case 'apple-music':
+        return {
+          glow: 'bg-pink-500/30',
+          gradient: 'from-pink-500 to-rose-500',
+          shadow: 'shadow-pink-500/50'
+        };
+      case 'youtube':
+        return {
+          glow: 'bg-red-500/30',
+          gradient: 'from-red-500 to-red-600',
+          shadow: 'shadow-red-500/50'
+        };
+      case 'soundcloud':
+        return {
+          glow: 'bg-orange-500/30',
+          gradient: 'from-orange-500 to-orange-600',
+          shadow: 'shadow-orange-500/50'
+        };
+      default:
+        return {
+          glow: 'bg-white/30',
+          gradient: 'from-white to-gray-200',
+          shadow: 'shadow-white/50'
+        };
+    }
+  };
+
+  const colors = getServiceColors();
+
   return (
     <button
       onClick={onClick}
@@ -23,9 +61,7 @@ export function PlaylistButton({ name, service, isActive, onClick, style }: Play
       <div
         className={`absolute inset-0 rounded-full transition-all duration-300 ${
           isActive
-            ? service === 'spotify'
-              ? 'bg-green-500/30 blur-xl'
-              : 'bg-pink-500/30 blur-xl'
+            ? `${colors.glow} blur-xl`
             : 'bg-white/5 blur-md group-hover:bg-white/10'
         }`}
       />
@@ -34,9 +70,7 @@ export function PlaylistButton({ name, service, isActive, onClick, style }: Play
       <div
         className={`relative size-14 md:size-16 rounded-full flex items-center justify-center transition-all duration-300 ${
           isActive
-            ? service === 'spotify'
-              ? 'bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/50'
-              : 'bg-gradient-to-br from-pink-500 to-rose-500 shadow-lg shadow-pink-500/50'
+            ? `bg-gradient-to-br ${colors.gradient} shadow-lg ${colors.shadow}`
             : 'bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/15 group-hover:border-white/30'
         }`}
       >

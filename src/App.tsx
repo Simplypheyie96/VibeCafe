@@ -21,6 +21,7 @@ import { AmbientButton } from "./components/AmbientButton";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { ChangeSceneModal } from "./components/ChangeSceneModal";
 import { CustomSceneDropdown } from "./components/CustomSceneDropdown";
+import { MetaTags } from "./components/MetaTags";
 import { CustomScene, CustomPlaylist, Preset } from "./types";
 import {
   initAnalytics,
@@ -1020,6 +1021,9 @@ function App() {
         backgroundColor: "black"
       }}
     >
+      {/* Meta tags for social sharing */}
+      <MetaTags />
+      
       {/* iOS Tap-to-Start Overlay */}
       {isIOS && !iOSReady && (
         <div
@@ -1467,8 +1471,8 @@ function App() {
             onClick={handleBirdsToggle}
             style={{
               position: "absolute",
-              left: "62%",
-              top: "35%",
+              left: "15%",
+              top: "45%",
             }}
           />
         </div>
@@ -1495,7 +1499,7 @@ function App() {
             style={{
               position: "absolute",
               left: "12%",
-              top: "55%",
+              top: "58%",
             }}
           />
         </div>
@@ -1508,7 +1512,7 @@ function App() {
             style={{
               position: "absolute",
               right: "12%",
-              top: "55%",
+              top: "58%",
             }}
           />
         </div>
@@ -1521,8 +1525,8 @@ function App() {
             onClick={handleSnowToggle}
             style={{
               position: "absolute",
-              left: "15%",
-              top: "20%",
+              left: "40%",
+              top: "30%",
             }}
           />
         </div>
@@ -1534,8 +1538,8 @@ function App() {
             onClick={handleFirefliesToggle}
             style={{
               position: "absolute",
-              right: "15%",
-              top: "25%",
+              left: "70%",
+              top: "32%",
             }}
           />
         </div>
@@ -1547,8 +1551,8 @@ function App() {
             onClick={handleLeavesToggle}
             style={{
               position: "absolute",
-              left: "60%",
-              top: "20%",
+              left: "75%",
+              top: "48%",
             }}
           />
         </div>
@@ -1560,8 +1564,8 @@ function App() {
             onClick={handleStarsToggle}
             style={{
               position: "absolute",
-              left: "35%",
-              top: "65%",
+              left: "45%",
+              top: "60%",
             }}
           />
         </div>
