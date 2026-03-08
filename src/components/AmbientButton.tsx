@@ -69,13 +69,27 @@ export function AmbientButton({ type, isActive, onClick, style }: AmbientButtonP
     }
   };
 
+  const labels = {
+    rain: 'Rain sounds',
+    city: 'City ambience',
+    fire: 'Fire crackling',
+    birds: 'Bird sounds',
+    cafe: 'Cafe murmur',
+    snow: 'Snowfall',
+    fireflies: 'Fireflies',
+    leaves: 'Falling leaves',
+    stars: 'Starry night',
+  };
+
   const Icon = icons[type];
   const colors = activeColors[type];
+  const label = labels[type];
 
   return (
-    <div className="size-[44px] md:size-[48px] z-40" style={style}>
+    <div className="group size-[44px] md:size-[48px] z-40 overflow-visible" style={style}>
       <button
         onClick={onClick}
+        aria-label={label}
         className={`ambient-button box-border flex h-[44px] md:h-[48px] w-[44px] md:w-[48px] items-center justify-center p-[6px] md:p-[8px] relative rounded-[14px] md:rounded-[16px] transition-all duration-300 cursor-pointer backdrop-blur-md active:scale-95 touch-manipulation ${
           isActive ? 'scale-105 active-button' : 'hover:scale-105'
         }`}
@@ -106,6 +120,10 @@ export function AmbientButton({ type, isActive, onClick, style }: AmbientButtonP
           />
         )}
       </button>
+      {/* Tooltip - after button so it renders on top */}
+      <div className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
+        {label}
+      </div>
     </div>
   );
 }

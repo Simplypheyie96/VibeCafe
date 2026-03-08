@@ -8,20 +8,20 @@ interface GenreTagsProps {
 export function GenreTags({ tags, activeTag }: GenreTagsProps) {
   return (
     <>
-      {/* Desktop: Original absolute positioning */}
-      <div className="hidden md:block absolute h-[39px] left-[24px] top-[96px] w-[259.305px] z-40">
+      {/* Desktop: Flex layout instead of absolute */}
+      <div className="hidden md:flex absolute left-[24px] top-[96px] z-40 gap-2">
         {/* First tag with green dot - active */}
-        <div className="absolute bg-[rgba(255,255,255,0.15)] backdrop-blur-xl border border-[rgba(255,255,255,0.3)] border-solid h-[30px] left-0 rounded-[1.67772e+07px] top-px w-[128.516px] shadow-lg shadow-black/20">
-          <div className="absolute bg-[#05df72] left-[12px] opacity-[0.8] rounded-[1.67772e+07px] size-[8px] top-[10px] shadow-sm shadow-[#05df72]/50" />
-          <p className="absolute font-['Space_Grotesk',sans-serif] font-normal leading-[20px] left-[28px] not-italic text-[14px] text-nowrap text-white top-[4.5px] tracking-[-0.1504px] whitespace-pre">
+        <div className="flex items-center bg-[rgba(255,255,255,0.15)] backdrop-blur-xl border border-[rgba(255,255,255,0.3)] border-solid h-[30px] rounded-full shadow-lg shadow-black/20 px-3">
+          <div className="bg-[#05df72] opacity-[0.8] rounded-full size-[8px] shadow-sm shadow-[#05df72]/50 mr-2 flex-shrink-0" />
+          <p className="font-['Space_Grotesk',sans-serif] font-normal text-[14px] text-nowrap text-white tracking-[-0.1504px]">
             {tags[0] || 'Lofi Chill'}
           </p>
         </div>
 
         {/* Second tag */}
         {tags[1] && (
-          <div className="absolute bg-[rgba(255,255,255,0.15)] backdrop-blur-xl border border-[rgba(255,255,255,0.3)] border-solid h-[30px] left-[136.52px] rounded-[1.67772e+07px] top-0 w-[122.789px] shadow-lg shadow-black/20">
-            <p className="absolute font-['Space_Grotesk',sans-serif] font-normal leading-[20px] left-[12px] not-italic text-[14px] text-nowrap text-white top-[4.5px] tracking-[-0.1504px] whitespace-pre">
+          <div className="flex items-center bg-[rgba(255,255,255,0.15)] backdrop-blur-xl border border-[rgba(255,255,255,0.3)] border-solid h-[30px] rounded-full shadow-lg shadow-black/20 px-3">
+            <p className="font-['Space_Grotesk',sans-serif] font-normal text-[14px] text-nowrap text-white tracking-[-0.1504px]">
               {tags[1]}
             </p>
           </div>

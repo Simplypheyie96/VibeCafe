@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ExternalLink, Music, Edit2, Trash2, Link2 } from 'lucide-react';
+import { ExternalLink, Music, Edit2, Trash2, Link2, Play } from 'lucide-react';
 import { ModalShell } from './ui/ModalShell';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { CustomPlaylist, Scene } from '../types';
 
 interface MyPlaylistsModalProps {
@@ -146,34 +147,52 @@ export function MyPlaylistsModal({
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => onPlayPlaylist?.(playlist.id)}
-                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                          title="Play playlist"
-                        >
-                          <Music className="size-4 text-white/60 hover:text-white" strokeWidth={2} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingPlaylistId(playlist.id);
-                            setEditSceneId(playlist.sceneId);
-                          }}
-                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                          title="Edit scene assignment"
-                        >
-                          <Edit2 className="size-4 text-white/60 hover:text-white" strokeWidth={2} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (confirm(`Delete "${playlist.name}"?`)) {
-                              onDeletePlaylist?.(playlist.id);
-                            }
-                          }}
-                          className="p-1.5 hover:bg-red-500/10 rounded-lg transition-colors"
-                          title="Delete playlist"
-                        >
-                          <Trash2 className="size-4 text-white/60 hover:text-red-400" strokeWidth={2} />
-                        </button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => onPlayPlaylist?.(playlist.id)}
+                              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                              <Play className="size-4 text-white/60" fill="currentColor" strokeWidth={0} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                            Play
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => {
+                                setEditingPlaylistId(playlist.id);
+                                setEditSceneId(playlist.sceneId);
+                              }}
+                              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                              <Edit2 className="size-4 text-white/60" strokeWidth={2} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                            Assign to scene
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Delete "${playlist.name}"?`)) {
+                                  onDeletePlaylist?.(playlist.id);
+                                }
+                              }}
+                              className="p-1.5 hover:bg-red-500/10 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="size-4 text-white/60 hover:text-red-400" strokeWidth={2} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                            Delete
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
 

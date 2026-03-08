@@ -53,7 +53,7 @@ export function CustomSceneDropdown({
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-4 md:left-1/2 md:-translate-x-1/2 bottom-[240px] md:bottom-auto md:top-[740px] z-50"
+      className="absolute left-4 md:left-1/2 md:-translate-x-1/2 bottom-[280px] md:bottom-auto md:top-[740px] z-50"
     >
       {/* Dropdown Toggle Button */}
       <button

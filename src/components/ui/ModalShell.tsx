@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { X } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./tooltip";
 
 export function ModalShell({ title, description, children, onClose }) {
   const normalizedChildren = React.Children.toArray(children).map(
@@ -43,12 +44,16 @@ export function ModalShell({ title, description, children, onClose }) {
             )}
           </div>
 
-          <button
-            onClick={onClose}
-            className="text-white/70 hover:text-white p-1"
-          >
-            <X size={20} />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={onClose} className="text-white/70 hover:text-white p-1">
+                <X size={20} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+              Close
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Scrollable Content */}

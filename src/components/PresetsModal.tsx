@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ModalShell } from './ui/ModalShell';
 import { Save, Trash2, Play } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { Preset } from '../types';
 
 interface PresetsModalProps {
@@ -156,13 +157,20 @@ export function PresetsModal({
                           Load
                         </span>
                       </button>
-                      <button
-                        onClick={() => onDeletePreset(preset.id)}
-                        className="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-[12px] transition-all duration-200"
-                        aria-label="Delete preset"
-                      >
-                        <Trash2 className="size-3.5 text-red-400" strokeWidth={2} />
-                      </button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => onDeletePreset(preset.id)}
+                            className="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-[12px] transition-all duration-200"
+                            aria-label="Delete preset"
+                          >
+                            <Trash2 className="size-3.5 text-red-400" strokeWidth={2} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                          Delete preset
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>

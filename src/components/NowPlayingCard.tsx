@@ -11,7 +11,7 @@ interface NowPlayingCardProps {
 export function NowPlayingCard({ trackTitle, artist, isPlaying, onPlayPause }: NowPlayingCardProps) {
   return (
     <div className="absolute bg-[rgba(255,255,255,0.25)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)] flex flex-col z-30
-      left-4 right-4 bottom-[128px]
+      left-4 right-4 bottom-[200px]
       md:left-[31px] md:right-auto md:top-[534px] md:bottom-auto md:w-[221px]
       rounded-[12px] md:rounded-[16.4px] shadow-xl shadow-black/30
       sm:left-6 sm:right-6 sm:max-w-[400px]"
@@ -31,23 +31,29 @@ export function NowPlayingCard({ trackTitle, artist, isPlaying, onPlayPause }: N
           </p>
           
           {/* Play/Pause button */}
-          <button
-            onClick={onPlayPause}
-            className="size-[24px] md:size-[20px] hover:scale-110 active:scale-95 transition-transform duration-200 shrink-0 flex items-center justify-center"
-          >
-            <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
-              <g id="Icon">
-                {isPlaying ? (
-                  <>
-                    <path d={svgPaths.p3bff1000} id="Vector" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d={svgPaths.p2916c800} id="Vector_2" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                  </>
-                ) : (
-                  <path d="M4 2.66667L12 8L4 13.3333V2.66667Z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                )}
-              </g>
-            </svg>
-          </button>
+          <div className="group relative shrink-0 flex items-center justify-center">
+            <button
+              onClick={onPlayPause}
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+              className="size-[24px] md:size-[20px] hover:scale-110 active:scale-95 transition-transform duration-200 flex items-center justify-center"
+            >
+              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
+                <g id="Icon">
+                  {isPlaying ? (
+                    <>
+                      <path d={svgPaths.p3bff1000} id="Vector" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                      <path d={svgPaths.p2916c800} id="Vector_2" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    </>
+                  ) : (
+                    <path d="M4 2.66667L12 8L4 13.3333V2.66667Z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                  )}
+                </g>
+              </svg>
+            </button>
+            <div className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
+              {isPlaying ? 'Pause' : 'Play'}
+            </div>
+          </div>
         </div>
       </div>
       

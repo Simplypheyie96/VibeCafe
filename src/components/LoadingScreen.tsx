@@ -15,18 +15,15 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
     const duration = 5000;
     const interval = 50;
     const increment = (interval / duration) * 100;
-    
+
     const timer = setInterval(() => {
       setProgress(prev => {
         const newProgress = prev + increment;
         if (newProgress >= 100) {
           clearInterval(timer);
-          // Wait a bit before completing
           setTimeout(() => {
             setIsComplete(true);
-            setTimeout(() => {
-              onLoadingComplete();
-            }, 800); // Wait for fade out animation
+            setTimeout(() => onLoadingComplete(), 800);
           }, 500);
           return 100;
         }
@@ -228,14 +225,16 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
 
       {/* Bottom Ambient Detail */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-amber-200/30 text-xs"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.5 }}
         transition={{ duration: 1, delay: 0.8 }}
       >
-        <div className="w-1 h-1 bg-amber-400/50 rounded-full" />
-        <span className="tracking-wider">Lofi • Chill • Focus</span>
-        <div className="w-1 h-1 bg-amber-400/50 rounded-full" />
+        <div className="flex items-center gap-2 text-amber-200/30 text-xs">
+          <div className="w-1 h-1 bg-amber-400/50 rounded-full" />
+          <span className="tracking-wider">Lofi • Chill • Focus</span>
+          <div className="w-1 h-1 bg-amber-400/50 rounded-full" />
+        </div>
       </motion.div>
     </motion.div>
   );

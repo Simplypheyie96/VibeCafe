@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { scenes } from "./data/scenes";
 import { SceneCarousel } from "./components/SceneCarousel";
 import { GenreTags } from "./components/GenreTags";
-import { FloatingOrb } from "./components/FloatingOrb";
 import { NowPlayingCard } from "./components/NowPlayingCard";
 import { SettingsModal } from "./components/SettingsModal";
 import { MyPlaylistsModal } from "./components/MyPlaylistsModal";
@@ -150,9 +149,6 @@ function App() {
   const currentScene = getScene(activeScene);
   const previousScene = getScene(prevScene);
   const currentTrack = currentScene.playlist[0];
-
-  // Stable key that only updates when the scene changes
-  const wallpaperKey = `wallpaper-${currentScene.id}`;
 
   // Debug: Log wallpaper URL on scene change
   useEffect(() => {
@@ -431,7 +427,18 @@ function App() {
       setTimeout(() => {
         if (musicAudioRef.current && !isLoading && (!isIOS || iOSReady)) {
           musicAudioRef.current.play().catch(() => {
-            // Autoplay prevented - user interaction required
+            // Autoplay blocked — resume on first user interaction
+            const resumeOnInteraction = () => {
+              if (musicAudioRef.current) {
+                musicAudioRef.current.play().catch(() => {});
+              }
+              document.removeEventListener("click", resumeOnInteraction);
+              document.removeEventListener("touchstart", resumeOnInteraction);
+              document.removeEventListener("keydown", resumeOnInteraction);
+            };
+            document.addEventListener("click", resumeOnInteraction, { once: true });
+            document.addEventListener("touchstart", resumeOnInteraction, { once: true });
+            document.addEventListener("keydown", resumeOnInteraction, { once: true });
           });
         }
       }, 500);
@@ -494,13 +501,19 @@ function App() {
   useEffect(() => {
     // Find playlist linked to current scene
     const linkedPlaylist = customPlaylists.find(p => p.sceneId === activeScene);
-    
+
     if (linkedPlaylist) {
       // Auto-open the linked playlist
       setActivePlaylistId(linkedPlaylist.id);
     } else {
-      // Close playlist if switching to a scene without a linked playlist
-      setActivePlaylistId(null);
+      // Only close if the currently active playlist is scene-linked (not a general/unlinked playlist)
+      setActivePlaylistId(prev => {
+        if (prev === null) return null;
+        const currentPlaylist = customPlaylists.find(p => p.id === prev);
+        // Keep unlinked playlists (sceneId === null) open across scene changes
+        if (currentPlaylist && currentPlaylist.sceneId === null) return prev;
+        return null;
+      });
     }
   }, [activeScene, customPlaylists]);
 
@@ -748,7 +761,7 @@ function App() {
 
   const handleAddPlaylist = (playlist: {
     name: string;
-    service: 'spotify' | 'apple-music';
+    service: 'spotify' | 'apple-music' | 'youtube' | 'soundcloud';
     url: string;
     embedId: string;
     sceneId: number | null;
@@ -758,6 +771,8 @@ function App() {
       ...playlist,
     };
     setCustomPlaylists((prev) => [...prev, newPlaylist]);
+    // Open the embed immediately so the user sees it right after import
+    setActivePlaylistId(newPlaylist.id);
     const sceneName = playlist.sceneId !== null ? getScene(playlist.sceneId).name : 'general';
     showToast(`Playlist "${playlist.name}" imported${playlist.sceneId !== null ? ` for ${sceneName}` : ''}!`);
   };
@@ -1050,7 +1065,7 @@ function App() {
       
       {/* Background wallpaper - crossfade transition between scenes */}
       <div 
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none overflow-hidden"
         style={{
           top: "calc(env(safe-area-inset-top) * -1)",
           bottom: "calc(env(safe-area-inset-bottom) * -1)",
@@ -1068,7 +1083,7 @@ function App() {
                 : previousScene.wallpaper
             }
             alt={previousScene.name}
-            className="absolute inset-0 w-full h-full object-cover object-center opacity-100 transition-opacity duration-700"
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-100 transition-opacity duration-700 animate-scene-motion"
             style={{ objectPosition: "center center" }}
           />
         )}
@@ -1082,7 +1097,7 @@ function App() {
               : currentScene.wallpaper
           }
           alt={currentScene.name}
-          className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${
+          className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 animate-scene-motion ${
             sceneTransitioning ? "opacity-0" : "opacity-100"
           }`}
           style={{ objectPosition: "center center" }}
@@ -1101,7 +1116,6 @@ function App() {
         ref={musicAudioRef}
         loop
         preload="auto"
-        crossOrigin="anonymous"
         playsInline
         onCanPlay={() => {
           if (musicAudioRef.current) {
@@ -1118,7 +1132,6 @@ function App() {
           loop
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           onCanPlay={() => {
             if (rainAudioRef.current) {
               rainAudioRef.current.volume = rainVolume / 100;
@@ -1140,7 +1153,6 @@ function App() {
           loop
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           onCanPlay={() => {
             if (birdsAudioRef.current) {
               birdsAudioRef.current.volume = birdsVolume / 100;
@@ -1162,7 +1174,6 @@ function App() {
           loop
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           onCanPlay={() => {
             if (cityAudioRef.current) {
               cityAudioRef.current.volume = cityVolume / 100;
@@ -1184,7 +1195,6 @@ function App() {
           loop
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           onCanPlay={() => {
             if (fireAudioRef.current) {
               fireAudioRef.current.volume = fireVolume / 100;
@@ -1206,7 +1216,6 @@ function App() {
           loop
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           onCanPlay={() => {
             if (cafeAudioRef.current) {
               cafeAudioRef.current.volume = cafeVolume / 100;
@@ -1226,101 +1235,19 @@ function App() {
 
       {/* Main content container */}
       <div className="relative size-full">
-        {/* Tab Navigation - Centered */}
+        {/* Tab Navigation - Centered with Change Scene & Settings icons */}
         <TabNavigation
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          onChangeScene={() => setIsChangeSceneModalOpen(true)}
+          onOpenSettings={handleSettingsOpen}
         />
-
-        {/* Add Content Buttons - Positioned below Settings button */}
-        {activeTab === 'scenes' && (
-          <div className="absolute right-4 top-[170px]
-            sm:right-6 sm:top-[180px]
-            md:right-6 md:top-[190px]
-            lg:right-8 lg:top-[200px]
-            z-50">
-            <button
-              onClick={() => setIsChangeSceneModalOpen(true)}
-              className="relative size-[48px]
-                sm:size-[52px]
-                md:size-[56px]
-                lg:size-[64px]
-                bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200 hover:scale-105"
-              aria-label="Change scene"
-            >
-              <svg 
-                className="size-5 sm:size-6 md:size-7 lg:size-8 text-white" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </button>
-          </div>
-        )}
-        
-        {activeTab === 'playlists' && !isPlaylistsModalOpen && (
-          <div
-            style={{
-              position: "fixed",
-              right: "20px",
-              top: "200px",
-              zIndex: 9999,
-              touchAction: "none",
-            }}
-            onPointerDown={(e) => {
-              const el = e.currentTarget as HTMLDivElement;
-              const startX = e.clientX;
-              const startY = e.clientY;
-              const startLeft = el.offsetLeft;
-              const startTop = el.offsetTop;
-
-              const move = (ev: PointerEvent) => {
-                el.style.left = startLeft + (ev.clientX - startX) + "px";
-                el.style.top = startTop + (ev.clientY - startY) + "px";
-                el.style.right = "auto";
-              };
-
-              const stop = () => {
-                window.removeEventListener("pointermove", move);
-                window.removeEventListener("pointerup", stop);
-              };
-
-              window.addEventListener("pointermove", move);
-              window.addEventListener("pointerup", stop);
-            }}
-          >
-            <button
-              onClick={() => setIsAddPlaylistModalOpen(true)}
-              className="relative size-[48px]
-                sm:size-[52px]
-                md:size-[56px]
-                lg:size-[64px]
-                bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200 hover:scale-105 cursor-move"
-              aria-label="Import playlist"
-            >
-              <span className="text-white text-[20px] sm:text-[22px] md:text-[28px] lg:text-[32px] font-medium">+</span>
-              {customPlaylists.length > 0 && (
-                <span className="absolute -top-1 -right-1 size-5 sm:size-6 bg-pink-500 border-2 border-black rounded-full flex items-center justify-center">
-                  <span className="font-['Space_Grotesk',sans-serif] text-[10px] sm:text-[11px] font-bold text-white">
-                    {customPlaylists.length}
-                  </span>
-                </span>
-              )}
-            </button>
-          </div>
-        )}
 
         {/* Genre Tags - Exact Figma position */}
         <GenreTags
           tags={currentScene.tags}
           activeTag={currentScene.tags[0]}
         />
-
-        {/* FloatingOrb - Exact Figma position */}
-        <FloatingOrb onClick={handleSettingsOpen} badgeCount={presets.length} />
 
         {/* Now Playing Card - Exact Figma position and style */}
         <NowPlayingCard
@@ -1628,7 +1555,10 @@ function App() {
         customScenes={customScenes}
         onEditPlaylist={handleEditPlaylist}
         onDeletePlaylist={handleDeletePlaylist}
-        onPlayPlaylist={setActivePlaylistId}
+        onPlayPlaylist={(id) => {
+          setActivePlaylistId(id);
+          handlePlaylistsModalClose();
+        }}
       />
 
       {/* About Modal */}

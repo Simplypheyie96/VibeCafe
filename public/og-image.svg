@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#1a1614"/>
+  <!-- Warm gradient overlay -->
+  <radialGradient id="glow" cx="50%" cy="50%" r="60%">
+    <stop offset="0%" stop-color="#3d2b1f" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#1a1614" stop-opacity="1"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Vinyl record -->
+  <circle cx="600" cy="270" r="160" fill="#0a0908" stroke="#2a2220" stroke-width="2"/>
+  <circle cx="600" cy="270" r="136" fill="none" stroke="#2a2624" stroke-width="1" opacity="0.5"/>
+  <circle cx="600" cy="270" r="112" fill="none" stroke="#2a2624" stroke-width="1" opacity="0.5"/>
+  <circle cx="600" cy="270" r="88" fill="none" stroke="#2a2624" stroke-width="0.8" opacity="0.4"/>
+  <circle cx="600" cy="270" r="64" fill="none" stroke="#2a2624" stroke-width="0.8" opacity="0.4"/>
+  <!-- Label -->
+  <circle cx="600" cy="270" r="52" fill="#d4a574"/>
+  <circle cx="600" cy="270" r="48" fill="#c19064"/>
+  <circle cx="600" cy="270" r="42" fill="none" stroke="#b8835a" stroke-width="0.8"/>
+  <circle cx="600" cy="270" r="36" fill="none" stroke="#b8835a" stroke-width="0.6"/>
+  <!-- Center hole -->
+  <circle cx="600" cy="270" r="12" fill="#0a0908"/>
+  <!-- Shine -->
+  <path d="M600 120 Q624 178 600 220" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.12"/>
+
+  <!-- App name -->
+  <text x="600" y="490" font-family="Georgia, serif" font-size="72" font-weight="300" letter-spacing="8" fill="#f5e6d3" text-anchor="middle" opacity="0.92">VibeCafe</text>
+
+  <!-- Tagline -->
+  <text x="600" y="545" font-family="Georgia, serif" font-size="22" letter-spacing="6" fill="#d4a574" text-anchor="middle" opacity="0.65">LOFI · CHILL · FOCUS</text>
+
+  <!-- Decorative dots -->
+  <circle cx="480" cy="540" r="3" fill="#d4a574" opacity="0.4"/>
+  <circle cx="720" cy="540" r="3" fill="#d4a574" opacity="0.4"/>
+</svg>
