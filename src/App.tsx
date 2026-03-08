@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, startTransition } from "react";
 import { scenes } from "./data/scenes";
 import { SceneCarousel } from "./components/SceneCarousel";
 import { GenreTags } from "./components/GenreTags";
@@ -481,20 +481,22 @@ function App() {
   const handleSceneChange = (sceneId: number) => {
     if (sceneId === activeScene) return;
 
-    setPrevScene(activeScene);
-    setSceneTransitioning(true);
+    startTransition(() => {
+      setPrevScene(activeScene);
+      setSceneTransitioning(true);
 
-    setTimeout(() => {
-      setActiveScene(sceneId);
-      
-      // Track scene change in analytics
-      const scene = getScene(sceneId);
-      trackSceneChange(scene.name, sceneId, scene.isCustom || false);
-      
       setTimeout(() => {
-        setSceneTransitioning(false);
-      }, 700);
-    }, 50);
+        setActiveScene(sceneId);
+
+        // Track scene change in analytics
+        const scene = getScene(sceneId);
+        trackSceneChange(scene.name, sceneId, scene.isCustom || false);
+
+        setTimeout(() => {
+          setSceneTransitioning(false);
+        }, 700);
+      }, 50);
+    });
   };
 
   // Auto-load playlist linked to the current scene
