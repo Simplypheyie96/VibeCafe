@@ -1389,7 +1389,35 @@ function App() {
             style={{
               position: "absolute",
               left: "10%",
-              top: "28%",
+              top: "22%",
+            }}
+          />
+        </div>
+
+        <div className="md:hidden">
+          <AmbientButton
+            type="snow"
+            isActive={isSnowActive}
+            onClick={handleSnowToggle}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "22%",
+              transform: "translateX(-50%)",
+            }}
+          />
+        </div>
+
+        <div className="md:hidden">
+          <AmbientButton
+            type="fireflies"
+            isActive={isFirefliesActive}
+            onClick={handleFirefliesToggle}
+            style={{
+              position: "absolute",
+              left: "88%",
+              top: "22%",
+              transform: "translateX(-50%)",
             }}
           />
         </div>
@@ -1401,8 +1429,8 @@ function App() {
             onClick={handleBirdsToggle}
             style={{
               position: "absolute",
-              left: "15%",
-              top: "45%",
+              left: "10%",
+              top: "39%",
             }}
           />
         </div>
@@ -1415,7 +1443,21 @@ function App() {
             style={{
               position: "absolute",
               left: "50%",
-              top: "45%",
+              top: "39%",
+              transform: "translateX(-50%)",
+            }}
+          />
+        </div>
+
+        <div className="md:hidden">
+          <AmbientButton
+            type="leaves"
+            isActive={isLeavesActive}
+            onClick={handleLeavesToggle}
+            style={{
+              position: "absolute",
+              left: "88%",
+              top: "39%",
               transform: "translateX(-50%)",
             }}
           />
@@ -1428,61 +1470,8 @@ function App() {
             onClick={handleCityToggle}
             style={{
               position: "absolute",
-              left: "12%",
-              top: "58%",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="cafe"
-            isActive={isCafeActive}
-            onClick={handleCafeToggle}
-            style={{
-              position: "absolute",
-              right: "12%",
-              top: "58%",
-            }}
-          />
-        </div>
-
-        {/* Visual Effects - Mobile */}
-        <div className="md:hidden">
-          <AmbientButton
-            type="snow"
-            isActive={isSnowActive}
-            onClick={handleSnowToggle}
-            style={{
-              position: "absolute",
-              left: "40%",
-              top: "30%",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="fireflies"
-            isActive={isFirefliesActive}
-            onClick={handleFirefliesToggle}
-            style={{
-              position: "absolute",
-              left: "70%",
-              top: "32%",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="leaves"
-            isActive={isLeavesActive}
-            onClick={handleLeavesToggle}
-            style={{
-              position: "absolute",
-              left: "75%",
-              top: "48%",
+              left: "18%",
+              top: "56%",
             }}
           />
         </div>
@@ -1494,8 +1483,22 @@ function App() {
             onClick={handleStarsToggle}
             style={{
               position: "absolute",
-              left: "45%",
-              top: "60%",
+              left: "50%",
+              top: "56%",
+              transform: "translateX(-50%)",
+            }}
+          />
+        </div>
+
+        <div className="md:hidden">
+          <AmbientButton
+            type="cafe"
+            isActive={isCafeActive}
+            onClick={handleCafeToggle}
+            style={{
+              position: "absolute",
+              right: "18%",
+              top: "56%",
             }}
           />
         </div>
