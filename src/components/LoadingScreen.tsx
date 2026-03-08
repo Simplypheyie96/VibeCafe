@@ -4,35 +4,51 @@ import backgroundImg from 'figma:asset/718793307914dbf89f1f24aded5dc3a91340a13f.
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
+  imagesToPreload?: string[];
 }
 
-export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
+export function LoadingScreen({ onLoadingComplete, imagesToPreload = [] }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    // Simulate loading progress over 5 seconds
-    const duration = 5000;
-    const interval = 50;
-    const increment = (interval / duration) * 100;
+    const total = imagesToPreload.length;
 
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + increment;
-        if (newProgress >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            setIsComplete(true);
-            setTimeout(() => onLoadingComplete(), 800);
-          }, 500);
-          return 100;
-        }
-        return newProgress;
-      });
-    }, interval);
+    if (total === 0) {
+      // No images to preload — fall back to a short fixed timer
+      const timer = setTimeout(() => {
+        setProgress(100);
+        setTimeout(() => {
+          setIsComplete(true);
+          setTimeout(() => onLoadingComplete(), 800);
+        }, 500);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
 
-    return () => clearInterval(timer);
-  }, [onLoadingComplete]);
+    let loaded = 0;
+
+    const finish = () => {
+      setProgress(100);
+      setTimeout(() => {
+        setIsComplete(true);
+        setTimeout(() => onLoadingComplete(), 800);
+      }, 500);
+    };
+
+    const onLoad = () => {
+      loaded += 1;
+      setProgress(Math.round((loaded / total) * 100));
+      if (loaded >= total) finish();
+    };
+
+    imagesToPreload.forEach(src => {
+      const img = new Image();
+      img.onload = onLoad;
+      img.onerror = onLoad; // count errors as done so we don't hang
+      img.src = src;
+    });
+  }, [onLoadingComplete, imagesToPreload]);
 
   return (
     <motion.div

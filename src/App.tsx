@@ -1022,6 +1022,7 @@ function App() {
     return (
       <LoadingScreen
         onLoadingComplete={handleLoadingComplete}
+        imagesToPreload={scenes.map(s => s.wallpaper)}
       />
     );
   }
