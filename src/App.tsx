@@ -164,17 +164,21 @@ function App() {
     document.title = "VibeCafe - Lofi Music & Ambient Sounds";
   }, []);
 
-  // Mobile viewport height fix
+  // Viewport height fix — uses visualViewport so iOS Safari URL-bar show/hide is tracked
   useEffect(() => {
     function updateHeight() {
-      document.documentElement.style.setProperty(
-        "--app-height",
-        `${window.innerHeight}px`
-      );
+      // visualViewport.height correctly shrinks/grows as the iOS Safari URL bar appears/hides.
+      // window.innerHeight does NOT reliably update for URL bar transitions on iOS.
+      const h = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty("--app-height", `${h}px`);
     }
     updateHeight();
+    window.visualViewport?.addEventListener("resize", updateHeight);
     window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateHeight);
+      window.removeEventListener("resize", updateHeight);
+    };
   }, []);
 
   // Initialize Google Analytics
@@ -1067,8 +1071,10 @@ function App() {
       )}
       
       {/* Background wallpaper - crossfade transition between scenes */}
-      <div 
-        className="absolute pointer-events-none overflow-hidden"
+      {/* On mobile the background extends 72px below the container so the scene
+          image stays visible as the iOS URL bar collapses and reveals extra space. */}
+      <div
+        className="absolute pointer-events-none overflow-hidden bg-extend-mobile"
         style={{
           top: "calc(env(safe-area-inset-top) * -1)",
           bottom: "calc(env(safe-area-inset-bottom) * -1)",
@@ -1389,7 +1395,7 @@ function App() {
             style={{
               position: "absolute",
               left: "10%",
-              top: "22%",
+              top: "30%",
             }}
           />
         </div>
@@ -1402,7 +1408,7 @@ function App() {
             style={{
               position: "absolute",
               left: "50%",
-              top: "22%",
+              top: "30%",
               transform: "translateX(-50%)",
             }}
           />
@@ -1416,7 +1422,7 @@ function App() {
             style={{
               position: "absolute",
               left: "88%",
-              top: "22%",
+              top: "30%",
               transform: "translateX(-50%)",
             }}
           />

@@ -332,6 +332,31 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
               </div>
             </div>
           </motion.div>
+
+          {/* Auth hint — embedded players need web login, not native app login */}
+          {isExpanded && (service === 'spotify' || service === 'apple-music') && (
+            <div className="px-4 pb-4 pt-1">
+              <div className="bg-white/5 border border-white/10 rounded-[10px] px-3 py-2.5 flex items-start gap-2.5">
+                <svg className="size-[14px] text-white/40 shrink-0 mt-[2px]" fill="none" viewBox="0 0 16 16">
+                  <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M8 7v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="8" cy="5" r="0.75" fill="currentColor" />
+                </svg>
+                <p className="font-['Space_Grotesk',sans-serif] text-[11px] text-white/40 leading-[1.5]">
+                  Playback requires signing in via{' '}
+                  <a
+                    href={service === 'spotify' ? 'https://open.spotify.com' : 'https://music.apple.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-white/60 hover:text-white/80 transition-colors"
+                  >
+                    {service === 'spotify' ? 'open.spotify.com' : 'music.apple.com'}
+                  </a>{' '}
+                  in this browser. The native app login does not carry over to embedded players.
+                </p>
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
     </>

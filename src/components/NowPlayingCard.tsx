@@ -10,7 +10,7 @@ interface NowPlayingCardProps {
 
 export function NowPlayingCard({ trackTitle, artist, isPlaying, onPlayPause }: NowPlayingCardProps) {
   return (
-    <div className="absolute bg-[rgba(255,255,255,0.25)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)] flex flex-col z-30
+    <div className="now-playing-card absolute bg-[rgba(255,255,255,0.25)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)] flex flex-col z-30
       left-4 right-4 bottom-[200px]
       md:left-[31px] md:right-auto md:top-[534px] md:bottom-auto md:w-[221px]
       rounded-[12px] md:rounded-[16.4px] shadow-xl shadow-black/30

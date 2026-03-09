@@ -303,6 +303,51 @@ button {
 }
 
 /* ============================
+   MOBILE BACKGROUND EXTENSION
+   Extends the scene wallpaper 72px below the app container
+   so the iOS URL-bar collapsing never reveals a black gap.
+   ============================ */
+
+@media (max-width: 767px) {
+  .bg-extend-mobile {
+    bottom: calc(env(safe-area-inset-bottom, 0px) * -1 - 72px) !important;
+  }
+}
+
+/* ============================
+   SCENE CAROUSEL — MOBILE OVERRIDES
+   Desktop classes are untouched (Tailwind arbitrary values).
+   These rules override only on screens narrower than 768px.
+   ============================ */
+
+@media (max-width: 767px) {
+  /* Container: sit closer to bottom, leave padding on both sides */
+  .carousel-wrap {
+    bottom: 14px !important;
+    max-width: calc(100vw - 24px) !important;
+    width: 100% !important;
+  }
+
+  /* Inner scroll row: tighter gap and less padding */
+  .carousel-inner {
+    gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Each thumbnail button: significantly smaller */
+  .carousel-thumb {
+    height: 64px !important;
+    width: 76px !important;
+    border-radius: 7px !important;
+  }
+
+  /* Thumbnail image: match button radius */
+  .carousel-thumb-img {
+    border-radius: 7px !important;
+  }
+}
+
+/* ============================
    AMBIENT BUTTON STYLES
    ============================ */
 

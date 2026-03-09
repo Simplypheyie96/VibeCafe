@@ -3738,3 +3738,43 @@ button {
     transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
   }
 }
+
+/* ============================================================
+   SCENE CAROUSEL — MOBILE OVERRIDES  (390px / 622px viewport)
+   Desktop Tailwind classes are unchanged.
+   These rules fire below 768px and use !important to win over
+   the arbitrary-value Tailwind classes on the same elements.
+   ============================================================ */
+
+@media (max-width: 767px) {
+  .carousel-wrap {
+    bottom: 14px !important;
+    max-width: calc(100vw - 24px) !important;
+    width: 100% !important;
+  }
+
+  .carousel-inner {
+    gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+
+  .carousel-thumb {
+    height: 64px !important;
+    width: 76px !important;
+    border-radius: 7px !important;
+  }
+
+  .carousel-thumb-img {
+    border-radius: 7px !important;
+  }
+}
+
+/* ============================================================
+   NOW PLAYING CARD — MOBILE: sit above the smaller carousel
+   ============================================================ */
+
+@media (max-width: 767px) {
+  .now-playing-card {
+    bottom: 106px !important; /* 14px carousel bottom + 80px carousel height + 12px gap */
+  }
+}
