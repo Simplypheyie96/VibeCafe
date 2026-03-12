@@ -101,9 +101,9 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
         <iframe
           {...commonProps}
           height="380"
+          style={{ height: '380px', minHeight: '380px', maxHeight: '380px' }}
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           allowFullScreen
-          loading="lazy"
           title={`Spotify Playlist: ${name}`}
         />
       );
@@ -166,8 +166,8 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
           initial={false}
           animate={isExpanded ? { x: 0, y: 0 } : {}}
           className={`pointer-events-auto bg-[rgba(0,0,0,0.4)] backdrop-blur-xl border border-[rgba(255,255,255,0.2)] shadow-[0px_10px_15px_0px_rgba(0,0,0,0.1),0px_4px_6px_0px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden ${
-            isExpanded 
-              ? 'w-[90vw] max-w-[500px] rounded-[16px]' 
+            isExpanded
+              ? 'w-[90vw] max-w-[500px] rounded-[16px]'
               : 'w-[320px] rounded-[10px] absolute bottom-6 right-6 cursor-grab active:cursor-grabbing'
           }`}
         >
@@ -319,44 +319,31 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
             </div>
           </div>
 
-          {/* Iframe Container — always in DOM when playing so audio survives minimize */}
-          <motion.div
-            layout
-            className={`w-full overflow-hidden transition-all duration-300 relative z-0 bg-black/40 ${
-              isExpanded ? (service === 'spotify' ? 'h-[380px]' : 'h-[450px]') : 'h-0'
-            }`}
+          {/* Iframe container — inline min/max/height locks prevent layout animation from stretching */}
+          <div
+            style={{
+              height: isExpanded
+                ? service === 'spotify' ? '380px' : '450px'
+                : '0px',
+              minHeight: isExpanded
+                ? service === 'spotify' ? '380px' : '450px'
+                : '0px',
+              maxHeight: isExpanded
+                ? service === 'spotify' ? '380px' : '450px'
+                : '0px',
+              overflow: 'hidden',
+              transition: 'height 0.3s ease',
+              flexShrink: 0,
+            }}
+            className="w-full relative z-0 bg-black/40"
           >
-            <div className="w-full h-full p-2 pt-0 pb-3 px-3">
+            <div className="w-full h-full px-3 pb-3">
               <div className="w-full h-full rounded-[12px] overflow-hidden">
                 {renderIframe()}
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Auth hint — embedded players need web login, not native app login */}
-          {isExpanded && (service === 'spotify' || service === 'apple-music') && (
-            <div className="px-4 pb-4 pt-1">
-              <div className="bg-white/5 border border-white/10 rounded-[10px] px-3 py-2.5 flex items-start gap-2.5">
-                <svg className="size-[14px] text-white/40 shrink-0 mt-[2px]" fill="none" viewBox="0 0 16 16">
-                  <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M8 7v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  <circle cx="8" cy="5" r="0.75" fill="currentColor" />
-                </svg>
-                <p className="font-['Space_Grotesk',sans-serif] text-[11px] text-white/40 leading-[1.5]">
-                  Playback requires signing in via{' '}
-                  <a
-                    href={service === 'spotify' ? 'https://open.spotify.com' : 'https://music.apple.com'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline text-white/60 hover:text-white/80 transition-colors"
-                  >
-                    {service === 'spotify' ? 'open.spotify.com' : 'music.apple.com'}
-                  </a>{' '}
-                  in this browser. The native app login does not carry over to embedded players.
-                </p>
-              </div>
-            </div>
-          )}
         </motion.div>
       </div>
     </>
