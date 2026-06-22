@@ -32,10 +32,8 @@ import {
   trackEngagement,
 } from "./utils/analytics";
 
-// IMPORTANT: Replace with your actual Google Analytics 4 Measurement ID
-// Get this from: https://analytics.google.com/
-// Format: G-XXXXXXXXXX
-const GA_MEASUREMENT_ID = 'G-NSEG2KSE8X'; // ✅ Your VibeCafe Analytics ID
+// Analytics ID — set VITE_GA_ID in your .env.local or Vercel environment variables
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_ID ?? '';
 
 function App() {
   // All state declarations first
