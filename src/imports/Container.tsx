@@ -20,7 +20,7 @@ function FileUpload1() {
     <div className="h-[56px] overflow-clip relative shrink-0 w-full" data-name="File Upload">
       <div className="absolute font-['Inter:Medium',sans-serif] font-medium leading-[24px] left-0 not-italic text-[#101828] text-[16px] top-0 tracking-[-0.3125px] w-[262px]">
         <p className="mb-0">Portfolio:</p>
-        <a className="block cursor-pointer" href="https://simplypheyie.tilda.ws/">{` https://simplypheyie.tilda.ws/`}</a>
+        <a className="block cursor-pointer" href="https://simplypheyie.is-a.dev/">{` https://simplypheyie.is-a.dev/`}</a>
       </div>
     </div>
   );

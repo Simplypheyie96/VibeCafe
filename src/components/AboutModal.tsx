@@ -63,7 +63,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                 Ajayi Feyikemi Mabel
               </p>
               <a 
-                href="https://simplypheyie.tilda.ws/" 
+                href="https://simplypheyie.is-a.dev/" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-['Space_Grotesk',sans-serif] text-[13px] text-purple-300 hover:text-purple-200 inline-flex items-center transition-colors duration-200 gap-2"
