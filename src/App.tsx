@@ -24,6 +24,7 @@ import { ChangeSceneModal } from "./components/ChangeSceneModal";
 import { CustomSceneDropdown } from "./components/CustomSceneDropdown";
 import { MetaTags } from "./components/MetaTags";
 import { useMusicPlayer } from "./hooks/useMusicPlayer";
+import { setVolume, unlockAudio } from "./lib/audioVolume";
 import { tracksForScene } from "./data/musicCatalog";
 import { CustomScene, CustomPlaylist, Preset } from "./types";
 import {
@@ -391,12 +392,18 @@ function App() {
   // stall recovery, and per-track skipping, rather than one <audio loop> pointed
   // at a live stream that could only ever stop.
 
-  // Handle ambient audio volumes
-  useEffect(() => applyVolume(rainAudioRef, rainVolume), [rainVolume]);
-  useEffect(() => applyVolume(cityAudioRef, cityVolume), [cityVolume]);
-  useEffect(() => applyVolume(fireAudioRef, fireVolume), [fireVolume]);
-  useEffect(() => applyVolume(birdsAudioRef, birdsVolume), [birdsVolume]);
-  useEffect(() => applyVolume(cafeAudioRef, cafeVolume), [cafeVolume]);
+  // Handle ambient audio volumes.
+  //
+  // `isLoading` is a dependency, not decoration: the <audio> elements live
+  // below the `if (isLoading) return <LoadingScreen/>` early return, so on the
+  // first pass every ref is still null and these effects do nothing. Keyed only
+  // on the volume numbers they never ran again, which left all five clips
+  // sitting at 100% while their sliders read 50%.
+  useEffect(() => applyVolume(rainAudioRef, rainVolume), [rainVolume, isLoading]);
+  useEffect(() => applyVolume(cityAudioRef, cityVolume), [cityVolume, isLoading]);
+  useEffect(() => applyVolume(fireAudioRef, fireVolume), [fireVolume, isLoading]);
+  useEffect(() => applyVolume(birdsAudioRef, birdsVolume), [birdsVolume, isLoading]);
+  useEffect(() => applyVolume(cafeAudioRef, cafeVolume), [cafeVolume, isLoading]);
 
   // Handle scene change with smooth transition
   const handleSceneChange = (sceneId: number) => {
@@ -459,6 +466,7 @@ function App() {
     // A press here is itself the gesture the browser wants, so it can double as
     // the unlock if the user dismissed the gate without starting anything.
     if (!audioUnlocked) setAudioUnlocked(true);
+    unlockAudio();
     player.toggle();
     trackMusicPlayback(
       player.isPlaying ? 'pause' : 'play',
@@ -469,6 +477,9 @@ function App() {
 
   const handleEnterFromGate = () => {
     setAudioUnlocked(true);
+    // Same gesture that unlocks playback also resumes the gain graph, which is
+    // the only thing that makes the volume sliders work on iOS.
+    unlockAudio();
     player.play();
     trackMusicPlayback('play', currentTrack.title, currentTrack.artist);
   };
@@ -491,18 +502,19 @@ function App() {
     setIsSettingsOpen(true);
   };
 
-  // Robust volume application for mobile - ensures volume applies even when paused and after playback
+  // Volume application that survives iOS, where writing `.volume` is silently
+  // discarded -- see src/lib/audioVolume.ts. `setVolume` picks the gain-node
+  // path when it can and falls back to `.volume` when it can't.
   const applyVolume = (ref: React.RefObject<HTMLAudioElement>, value: number) => {
     const audio = ref.current;
     if (!audio) return;
 
-    // Ensure volume applies even when paused (mobile fix)
-    audio.volume = value / 100;
+    setVolume(audio, value);
 
-    // Ensure volume applies after playback (mobile fix)
-    audio.onplay = () => {
-      audio.volume = value / 100;
-    };
+    // Re-applied on play because an element routed through the gain graph only
+    // picks up its gain once the context is running, which may be later than
+    // the first time the slider moved.
+    audio.onplay = () => setVolume(audio, value);
   };
 
   // Audio toggle function with promise handling
@@ -516,12 +528,12 @@ function App() {
 
     const getVolume = () => {
       switch (type) {
-        case "rain": return rainVolume / 100;
-        case "city": return cityVolume / 100;
-        case "fire": return fireVolume / 100;
-        case "birds": return birdsVolume / 100;
-        case "cafe": return cafeVolume / 100;
-        default: return 0.5;
+        case "rain": return rainVolume;
+        case "city": return cityVolume;
+        case "fire": return fireVolume;
+        case "birds": return birdsVolume;
+        case "cafe": return cafeVolume;
+        default: return 50;
       }
     };
 
@@ -531,11 +543,11 @@ function App() {
     if (newState) {
       setActive(true);
 
-      audio.volume = volume;
+      setVolume(audio, volume);
 
       const tryPlay = async () => {
         try {
-          audio.volume = volume;
+          setVolume(audio, volume);
           await audio.play();
         } catch {}
       };
@@ -544,7 +556,7 @@ function App() {
         await tryPlay();
       } else {
         audio.load();
-        audio.volume = volume;
+        setVolume(audio, volume);
 
         await new Promise<void>((resolve) => {
           const handler = () => {
@@ -1015,12 +1027,11 @@ function App() {
         <audio
           ref={rainAudioRef}
           loop
+          crossOrigin="anonymous"
           playsInline
           preload="none"
           onCanPlay={() => {
-            if (rainAudioRef.current) {
-              rainAudioRef.current.volume = rainVolume / 100;
-            }
+            setVolume(rainAudioRef.current, rainVolume);
           }}
         >
           <source
@@ -1036,12 +1047,11 @@ function App() {
         <audio
           ref={birdsAudioRef}
           loop
+          crossOrigin="anonymous"
           playsInline
           preload="none"
           onCanPlay={() => {
-            if (birdsAudioRef.current) {
-              birdsAudioRef.current.volume = birdsVolume / 100;
-            }
+            setVolume(birdsAudioRef.current, birdsVolume);
           }}
         >
           <source
@@ -1057,12 +1067,11 @@ function App() {
         <audio
           ref={cityAudioRef}
           loop
+          crossOrigin="anonymous"
           playsInline
           preload="none"
           onCanPlay={() => {
-            if (cityAudioRef.current) {
-              cityAudioRef.current.volume = cityVolume / 100;
-            }
+            setVolume(cityAudioRef.current, cityVolume);
           }}
         >
           <source
@@ -1078,12 +1087,11 @@ function App() {
         <audio
           ref={fireAudioRef}
           loop
+          crossOrigin="anonymous"
           playsInline
           preload="none"
           onCanPlay={() => {
-            if (fireAudioRef.current) {
-              fireAudioRef.current.volume = fireVolume / 100;
-            }
+            setVolume(fireAudioRef.current, fireVolume);
           }}
         >
           <source
@@ -1099,12 +1107,11 @@ function App() {
         <audio
           ref={cafeAudioRef}
           loop
+          crossOrigin="anonymous"
           playsInline
           preload="none"
           onCanPlay={() => {
-            if (cafeAudioRef.current) {
-              cafeAudioRef.current.volume = cafeVolume / 100;
-            }
+            setVolume(cafeAudioRef.current, cafeVolume);
           }}
         >
           <source

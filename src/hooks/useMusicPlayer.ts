@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Track } from '../types';
 import type { PlaybackState } from '../components/NowPlayingCard';
+import { setVolume } from '../lib/audioVolume';
 
 /** Deterministic shuffle so a queue is stable for the life of a scene visit. */
 function shuffle<T>(input: T[], seed: number): T[] {
@@ -115,12 +116,13 @@ export function useMusicPlayer({ tracks, volume, unlocked, suspended }: Options)
     }
   }, [queue, unlocked, suspended, assign]);
 
-  /* --- Volume ------------------------------------------------------------- */
+  /* --- Volume -------------------------------------------------------------
+   *
+   * Via `setVolume` rather than `el.volume` directly: iOS silently ignores
+   * writes to `.volume`, which made this slider do nothing at all on an iPhone.
+   * See src/lib/audioVolume.ts. */
   useEffect(() => {
-    const v = Math.min(1, Math.max(0, volume / 100));
-    poolRef.current?.forEach((el) => {
-      el.volume = v;
-    });
+    poolRef.current?.forEach((el) => setVolume(el, volume));
   }, [volume]);
 
   /* --- Prefetch the track after this one ----------------------------------
