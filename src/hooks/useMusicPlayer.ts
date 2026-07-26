@@ -123,12 +123,26 @@ export function useMusicPlayer({ tracks, volume, unlocked, suspended }: Options)
     });
   }, [volume]);
 
-  /* --- Prefetch the track after this one ---------------------------------- */
-  useEffect(() => {
+  /* --- Prefetch the track after this one ----------------------------------
+   *
+   * Deliberately late. This used to be a mount effect, which meant the moment
+   * the app loaded it started downloading track 2 alongside track 1 -- two
+   * ~2.4MB files competing for the same pipe before a single note had played.
+   * On a phone that roughly doubled the wait for the track you were actually
+   * waiting for.
+   *
+   * Now the standby element stays idle until the live track is nearly over, so
+   * the first track gets the whole connection and the handover still has a
+   * comfortable head start. `PREFETCH_LEAD_S` is generous because the source
+   * host is slow to first byte (see the preconnect note in index.html).
+   */
+  const PREFETCH_LEAD_S = 45;
+
+  const prefetchNext = useCallback(() => {
     if (queue.length < 2) return;
-    const nextSrc = queue[(index + 1) % queue.length]?.src;
+    const nextSrc = queue[(indexRef.current + 1) % queue.length]?.src;
     if (nextSrc) assign(1 - liveRef.current, nextSrc);
-  }, [index, queue, assign]);
+  }, [queue, assign]);
 
   /* --- Suspension (an embedded playlist has taken over) ------------------- */
   useEffect(() => {
@@ -160,6 +174,15 @@ export function useMusicPlayer({ tracks, volume, unlocked, suspended }: Options)
     };
     const onEnded = (ev: Event) => {
       if (isLive(ev)) advance();
+    };
+
+    /* The prefetch trigger. Fires often, so it stays cheap: `assign` is a no-op
+       once the standby element already holds the right source. */
+    const onTimeUpdate = (ev: Event) => {
+      if (!isLive(ev)) return;
+      const el = pool[liveRef.current];
+      if (!Number.isFinite(el.duration)) return;
+      if (el.duration - el.currentTime <= PREFETCH_LEAD_S) prefetchNext();
     };
 
     /* A stall is usually a transient network hiccup: nudge the same track once,
@@ -195,6 +218,7 @@ export function useMusicPlayer({ tracks, volume, unlocked, suspended }: Options)
       ['pause', onPause],
       ['waiting', onWaiting],
       ['ended', onEnded],
+      ['timeupdate', onTimeUpdate],
       ['stalled', onStalled],
       ['error', onError],
     ];
@@ -202,7 +226,7 @@ export function useMusicPlayer({ tracks, volume, unlocked, suspended }: Options)
     return () => {
       pool.forEach((el) => events.forEach(([n, h]) => el.removeEventListener(n, h)));
     };
-  }, [advance, queue.length]);
+  }, [advance, queue.length, prefetchNext]);
 
   /* --- Controls ----------------------------------------------------------- */
   const play = useCallback(() => {

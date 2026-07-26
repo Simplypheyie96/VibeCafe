@@ -84,17 +84,22 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
     // narrow phone the two pill groups simply ran off both edges of the screen.
     // `pointer-events-none` keeps the now-transparent full-width strip from
     // swallowing taps meant for the scene behind it.
+    // On mobile the two pill groups are pushed out to the same 16px gutter the
+    // player (`left-4 right-4`) and the carousel (`100vw-32px`) use, so all
+    // three read as one column. Centring them instead left the row sitting ~43px
+    // in from each edge on a 390px screen -- visibly more inset than everything
+    // below it. Desktop stays centred: nothing up there shares an edge with it.
     <div
       className="absolute inset-x-0 top-[20px] md:top-[24px] z-40 pointer-events-none
-                 flex items-center justify-center
-                 px-3 md:px-4 md:px-6
-                 gap-[6px] md:gap-[12px] md:gap-[24px]"
+                 flex items-center justify-between md:justify-center
+                 px-4 md:px-6
+                 gap-[6px] md:gap-[24px]"
     >
       {/* Tab Pills Container */}
       <div
         className="glass pointer-events-auto relative flex items-center rounded-full py-px h-[44px]
                    px-[7px] md:px-[13px]
-                   gap-[8px] md:gap-[16px] md:gap-[24px]"
+                   gap-[8px] md:gap-[24px]"
       >
 
         {/* Scenes Tab */}

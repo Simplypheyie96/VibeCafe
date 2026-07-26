@@ -26,6 +26,17 @@
          actually loaded, so until now every visitor saw the system sans-serif. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!--
+      The music streams from archive.org, which is slow to first byte: the
+      /download/ path 302s to a per-item storage node, so the browser pays two
+      full DNS + TCP + TLS handshakes before any audio arrives (measured ~2.3s
+      to first byte, of which ~1.2s is handshake). Preconnecting overlaps the
+      first leg with app boot. The node hostname is assigned per item and can't
+      be known ahead of time, so the second leg is unavoidable from here.
+    -->
+    <link rel="preconnect" href="https://archive.org" crossorigin />
+    <link rel="dns-prefetch" href="https://archive.org" />
     <!-- Loaded without blocking first paint: as a render-blocking <link> this
          held the whole page white until Google responded. `display=swap` already
          means text renders in the fallback face and swaps when the font lands,

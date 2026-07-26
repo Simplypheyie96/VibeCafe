@@ -544,7 +544,10 @@ button {
   /* Container: sit above the home indicator, leave padding on both sides */
   .carousel-wrap {
     bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
-    max-width: calc(100vw - 24px) !important;
+    /* 32px, not 24px: this is the shared mobile gutter. The nav row and the
+       now-playing card both sit 16px from each edge, and at 24px the carousel
+       was the one element reaching 4px wider than the stack above it. */
+    max-width: calc(100vw - 32px) !important;
     width: 100% !important;
   }
 
