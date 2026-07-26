@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, startTransition } from "react";
+import React, { useState, useEffect, useMemo, useRef, startTransition } from "react";
 import { scenes } from "./data/scenes";
 import { SceneCarousel } from "./components/SceneCarousel";
 import { GenreTags } from "./components/GenreTags";
@@ -16,11 +16,15 @@ import { Toast } from "./components/Toast";
 import { PlaylistEmbed } from "./components/PlaylistEmbed";
 import { PresetsModal } from "./components/PresetsModal";
 import { AddPlaylistModal } from "./components/AddPlaylistModal";
-import { AmbientButton } from "./components/AmbientButton";
+import { AmbientDock, AmbientKey } from "./components/AmbientDock";
+import { AudioGate } from "./components/AudioGate";
+import { InstallPrompt } from "./components/InstallPrompt";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { ChangeSceneModal } from "./components/ChangeSceneModal";
 import { CustomSceneDropdown } from "./components/CustomSceneDropdown";
 import { MetaTags } from "./components/MetaTags";
+import { useMusicPlayer } from "./hooks/useMusicPlayer";
+import { tracksForScene } from "./data/musicCatalog";
 import { CustomScene, CustomPlaylist, Preset } from "./types";
 import {
   initAnalytics,
@@ -40,7 +44,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeScene, setActiveScene] = useState(0);
   const [prevScene, setPrevScene] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isRainActive, setIsRainActive] = useState(false);
   const [isCityActive, setIsCityActive] = useState(false);
   const [isFireActive, setIsFireActive] = useState(false);
@@ -71,7 +74,6 @@ function App() {
   const [presets, setPresets] = useState<Preset[]>([]);
   const [sceneTransitioning, setSceneTransitioning] =
     useState(false);
-  const [playerReady, setPlayerReady] = useState(false);
   const [musicVolume, setMusicVolume] = useState(70);
   const [rainVolume, setRainVolume] = useState(50);
   const [cityVolume, setCityVolume] = useState(50);
@@ -79,13 +81,10 @@ function App() {
   const [birdsVolume, setBirdsVolume] = useState(50);
   const [cafeVolume, setCafeVolume] = useState(50);
 
-  // iOS audio unlock state
-  const [iOSReady, setIOSReady] = useState(false);
-  
-  // Detect iOS device
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  // Set once the user has made the gesture every browser requires before audio
+  // may start. Until then the gate is up and nothing tries to play.
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
 
-  const musicAudioRef = useRef<HTMLAudioElement>(null);
   const rainAudioRef = useRef<HTMLAudioElement>(null);
   const cityAudioRef = useRef<HTMLAudioElement>(null);
   const fireAudioRef = useRef<HTMLAudioElement>(null);
@@ -146,16 +145,23 @@ function App() {
 
   const currentScene = getScene(activeScene);
   const previousScene = getScene(prevScene);
-  const currentTrack = currentScene.playlist[0];
 
-  // Debug: Log wallpaper URL on scene change
-  useEffect(() => {
-    console.log('=== SCENE CHANGE DEBUG ===');
-    console.log('Active Scene ID:', activeScene);
-    console.log('Scene Name:', currentScene.name);
-    console.log('Wallpaper URL:', currentScene.wallpaper);
-    console.log('========================');
-  }, [activeScene, currentScene.name, currentScene.wallpaper]);
+  // The queue for this scene: a mood bucket from the Creative Commons catalog for
+  // built-in scenes, or the single user-supplied URL for a custom one.
+  const sceneTracks = useMemo(
+    () => tracksForScene(currentScene),
+    [currentScene.id, currentScene.mood, currentScene.musicUrl],
+  );
+
+  const player = useMusicPlayer({
+    tracks: sceneTracks,
+    volume: musicVolume,
+    unlocked: audioUnlocked,
+    // An embedded playlist takes over the audio; the scene player steps aside.
+    suspended: activePlaylistId !== null,
+  });
+
+  const currentTrack = player.track ?? currentScene.playlist[0];
 
   // Set page title
   useEffect(() => {
@@ -381,96 +387,9 @@ function App() {
     };
   }, []);
 
-  // Initialize HTML5 audio player - only after loading is complete
-  useEffect(() => {
-    if (!isLoading && musicAudioRef.current) {
-      musicAudioRef.current.volume = musicVolume / 100;
-
-      const handleCanPlay = () => {
-        setPlayerReady(true);
-      };
-
-      const handlePlay = () => setIsPlaying(true);
-      const handlePause = () => setIsPlaying(false);
-      const handleError = (e: Event) => {
-        const audio = e.target as HTMLAudioElement;
-        const error = audio.error;
-        if (error) {
-          console.warn(
-            "Music audio error:",
-            error.code,
-            error.message,
-          );
-        }
-      };
-
-      musicAudioRef.current.addEventListener(
-        "canplay",
-        handleCanPlay,
-      );
-      musicAudioRef.current.addEventListener(
-        "play",
-        handlePlay,
-      );
-      musicAudioRef.current.addEventListener(
-        "pause",
-        handlePause,
-      );
-      musicAudioRef.current.addEventListener(
-        "error",
-        handleError,
-      );
-
-      // Set initial music source
-      musicAudioRef.current.src = currentScene.musicUrl;
-      musicAudioRef.current.load();
-
-      // Auto-play after loading screen is done (skip on iOS until user taps)
-      setTimeout(() => {
-        if (musicAudioRef.current && !isLoading && (!isIOS || iOSReady)) {
-          musicAudioRef.current.play().catch(() => {
-            // Autoplay blocked — resume on first user interaction
-            const resumeOnInteraction = () => {
-              if (musicAudioRef.current) {
-                musicAudioRef.current.play().catch(() => {});
-              }
-              document.removeEventListener("click", resumeOnInteraction);
-              document.removeEventListener("touchstart", resumeOnInteraction);
-              document.removeEventListener("keydown", resumeOnInteraction);
-            };
-            document.addEventListener("click", resumeOnInteraction, { once: true });
-            document.addEventListener("touchstart", resumeOnInteraction, { once: true });
-            document.addEventListener("keydown", resumeOnInteraction, { once: true });
-          });
-        }
-      }, 500);
-
-      return () => {
-        if (musicAudioRef.current) {
-          musicAudioRef.current.removeEventListener(
-            "canplay",
-            handleCanPlay,
-          );
-          musicAudioRef.current.removeEventListener(
-            "play",
-            handlePlay,
-          );
-          musicAudioRef.current.removeEventListener(
-            "pause",
-            handlePause,
-          );
-          musicAudioRef.current.removeEventListener(
-            "error",
-            handleError,
-          );
-        }
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
-
-  // Update music volume
-  useEffect(() => applyVolume(musicAudioRef, musicVolume), [musicVolume]);
+  // Music playback now lives in useMusicPlayer: a real queue with auto-advance,
+  // stall recovery, and per-track skipping, rather than one <audio loop> pointed
+  // at a live stream that could only ever stop.
 
   // Handle ambient audio volumes
   useEffect(() => applyVolume(rainAudioRef, rainVolume), [rainVolume]);
@@ -521,75 +440,8 @@ function App() {
     }
   }, [activeScene, customPlaylists]);
 
-  // Pause/Resume default music based on playlist state
-  useEffect(() => {
-    if (!musicAudioRef.current || !playerReady || isLoading) {
-      return;
-    }
-
-    if (activePlaylistId !== null) {
-      // Pause default music when playlist is active
-      if (!musicAudioRef.current.paused) {
-        musicAudioRef.current.pause();
-      }
-    }
-    // Don't auto-resume when playlist closes - let user control playback
-  }, [activePlaylistId, playerReady, isLoading]);
-
-  // Handle scene change - load new audio and continue playing if music was playing
-  useEffect(() => {
-    if (musicAudioRef.current && playerReady && !isLoading) {
-      // Don't change music if a playlist is active
-      if (activePlaylistId !== null) {
-        return;
-      }
-
-      const wasPlaying = !musicAudioRef.current.paused;
-      const newMusicUrl = currentScene.musicUrl;
-
-      // Only change if the URL is actually different
-      if (musicAudioRef.current.src !== newMusicUrl) {
-        // Pause current playback first
-        musicAudioRef.current.pause();
-
-        // Load new music source
-        musicAudioRef.current.src = newMusicUrl;
-        musicAudioRef.current.load();
-
-        // Continue playing if music was already playing
-        if (wasPlaying) {
-          // Wait for the audio to be ready before playing
-          const handleCanPlayThrough = () => {
-            if (musicAudioRef.current) {
-              musicAudioRef.current.play().catch((error) => {
-                if (error.name !== "AbortError") {
-                  console.error(
-                    "Error playing music:",
-                    error.name,
-                  );
-                }
-              });
-              musicAudioRef.current.removeEventListener(
-                "canplaythrough",
-                handleCanPlayThrough,
-              );
-            }
-          };
-
-          musicAudioRef.current.addEventListener(
-            "canplaythrough",
-            handleCanPlayThrough,
-          );
-        }
-      }
-    }
-  }, [
-    activeScene,
-    playerReady,
-    currentScene.musicUrl,
-    isLoading,
-    activePlaylistId,
-  ]);
+  // Suspension and scene-change continuity are both handled inside useMusicPlayer:
+  // swapping the queue keeps playing when the user already had music running.
 
   // Handle tab change - ensure only one modal is open at a time
   useEffect(() => {
@@ -607,19 +459,21 @@ function App() {
   }, [activeTab]);
 
   const handlePlayPause = () => {
-    if (!playerReady || !musicAudioRef.current) {
-      return;
-    }
+    // A press here is itself the gesture the browser wants, so it can double as
+    // the unlock if the user dismissed the gate without starting anything.
+    if (!audioUnlocked) setAudioUnlocked(true);
+    player.toggle();
+    trackMusicPlayback(
+      player.isPlaying ? 'pause' : 'play',
+      currentTrack.title,
+      currentTrack.artist,
+    );
+  };
 
-    try {
-      if (musicAudioRef.current.paused) {
-        musicAudioRef.current.play();
-      } else {
-        musicAudioRef.current.pause();
-      }
-    } catch (error) {
-      console.error("Error toggling play/pause:", error);
-    }
+  const handleEnterFromGate = () => {
+    setAudioUnlocked(true);
+    player.play();
+    trackMusicPlayback('play', currentTrack.title, currentTrack.artist);
   };
 
   const handlePlaylistsModalClose = () => {
@@ -883,6 +737,33 @@ function App() {
     setIsStarsActive(!isStarsActive);
   };
 
+  // Flattened view of the nine controls, for the dock.
+  const ambientActive: Record<AmbientKey, boolean> = {
+    rain: isRainActive,
+    city: isCityActive,
+    fire: isFireActive,
+    birds: isBirdsActive,
+    cafe: isCafeActive,
+    snow: isSnowActive,
+    fireflies: isFirefliesActive,
+    leaves: isLeavesActive,
+    stars: isStarsActive,
+  };
+
+  const ambientToggles: Record<AmbientKey, () => void> = {
+    rain: handleRainToggle,
+    city: handleCityToggle,
+    fire: handleFireToggle,
+    birds: handleBirdsToggle,
+    cafe: handleCafeToggle,
+    snow: handleSnowToggle,
+    fireflies: handleFirefliesToggle,
+    leaves: handleLeavesToggle,
+    stars: handleStarsToggle,
+  };
+
+  const handleAmbientToggle = (key: AmbientKey) => ambientToggles[key]();
+
   const handleLoadingComplete = () => {
     setIsLoading(false);
   };
@@ -1032,42 +913,33 @@ function App() {
   }
 
   return (
-    <div 
-      className="relative w-screen overflow-hidden flex items-center justify-center bg-black" 
-      style={{ 
+    <main
+      className="relative w-screen overflow-hidden flex items-center justify-center bg-black"
+      style={{
         height: "var(--app-height)",
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)",
         backgroundColor: "black"
       }}
     >
+      {/* The app is a single full-bleed canvas with no visible page title, but a
+          screen reader still needs somewhere to land and a document heading. */}
+      <h1 className="sr-only">VibeCafe — lofi music and ambient sounds</h1>
+
       {/* Meta tags for social sharing */}
       <MetaTags />
-      
-      {/* iOS Tap-to-Start Overlay */}
-      {isIOS && !iOSReady && (
-        <div
-          onClick={() => {
-            setIOSReady(true);
-            if (musicAudioRef.current) {
-              musicAudioRef.current.play().catch(() => {});
-            }
-          }}
-          className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-[99999] cursor-pointer"
-        >
-          <div className="flex flex-col items-center gap-4">
-            <div className="size-16 rounded-full bg-white/10 flex items-center justify-center animate-pulse">
-              <svg className="size-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            <p className="font-['Space_Grotesk',sans-serif] text-white text-lg">
-              Tap to start
-            </p>
-          </div>
-        </div>
-      )}
-      
+
+      {/* Every browser requires a gesture before audio; this makes it the front door
+          rather than a silent failure the user has to work out for themselves. */}
+      <AudioGate
+        open={!audioUnlocked}
+        sceneName={currentScene.name}
+        onEnter={handleEnterFromGate}
+      />
+
+      {/* Install affordance: native prompt on Chromium, Share sheet walkthrough on iOS. */}
+      <InstallPrompt />
+
       {/* Background wallpaper - crossfade transition between scenes */}
       {/* On mobile the background extends 72px below the container so the scene
           image stays visible as the iOS URL bar collapses and reveals extra space. */}
@@ -1118,27 +990,20 @@ function App() {
       <LeavesAnimation isActive={isLeavesActive} />
       <StarsAnimation isActive={isStarsActive} />
 
-      {/* Hidden Music Player - src is managed by useEffect */}
-      <audio
-        ref={musicAudioRef}
-        loop
-        preload="auto"
-        playsInline
-        onCanPlay={() => {
-          if (musicAudioRef.current) {
-            musicAudioRef.current.volume = musicVolume / 100;
-          }
-        }}
-      />
+      {/* The music element is owned by useMusicPlayer, not the DOM. */}
 
-      {/* Hidden Audio Elements for Ambient Sounds */}
+      {/* Hidden Audio Elements for Ambient Sounds.
+          All five are preload="none": with preload="auto" the browser pulled
+          every clip on first paint -- over 3 MB of audio before anyone had
+          toggled a single sound on. They now fetch when first played, which is
+          what the setup effect above already assumed. */}
       <div className="fixed -left-[9999px] -top-[9999px] w-0 h-0 pointer-events-none">
         {/* Rain - Soft natural rainfall ambience */}
         <audio
           ref={rainAudioRef}
           loop
           playsInline
-          preload="auto"
+          preload="none"
           onCanPlay={() => {
             if (rainAudioRef.current) {
               rainAudioRef.current.volume = rainVolume / 100;
@@ -1159,7 +1024,7 @@ function App() {
           ref={birdsAudioRef}
           loop
           playsInline
-          preload="auto"
+          preload="none"
           onCanPlay={() => {
             if (birdsAudioRef.current) {
               birdsAudioRef.current.volume = birdsVolume / 100;
@@ -1180,7 +1045,7 @@ function App() {
           ref={cityAudioRef}
           loop
           playsInline
-          preload="auto"
+          preload="none"
           onCanPlay={() => {
             if (cityAudioRef.current) {
               cityAudioRef.current.volume = cityVolume / 100;
@@ -1201,7 +1066,7 @@ function App() {
           ref={fireAudioRef}
           loop
           playsInline
-          preload="auto"
+          preload="none"
           onCanPlay={() => {
             if (fireAudioRef.current) {
               fireAudioRef.current.volume = fireVolume / 100;
@@ -1222,7 +1087,7 @@ function App() {
           ref={cafeAudioRef}
           loop
           playsInline
-          preload="auto"
+          preload="none"
           onCanPlay={() => {
             if (cafeAudioRef.current) {
               cafeAudioRef.current.volume = cafeVolume / 100;
@@ -1260,252 +1125,17 @@ function App() {
         <NowPlayingCard
           trackTitle={currentTrack.title}
           artist={currentTrack.artist}
-          isPlaying={isPlaying}
+          license={currentTrack.license}
+          sourceUrl={currentTrack.sourceUrl}
+          state={player.state}
           onPlayPause={handlePlayPause}
+          onNext={sceneTracks.length > 1 ? player.next : undefined}
         />
 
-        {/* Ambient Sound Buttons - Floating with safe padding from edges */}
-        <div className="hidden md:block">
-          <AmbientButton
-            type="rain"
-            isActive={isRainActive}
-            onClick={handleRainToggle}
-            style={{
-              position: "absolute",
-              left: "12%",
-              top: "28%",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="birds"
-            isActive={isBirdsActive}
-            onClick={handleBirdsToggle}
-            style={{
-              position: "absolute",
-              left: "65%",
-              top: "32%",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="fire"
-            isActive={isFireActive}
-            onClick={handleFireToggle}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="city"
-            isActive={isCityActive}
-            onClick={handleCityToggle}
-            style={{
-              position: "absolute",
-              right: "18%",
-              bottom: "28%",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="cafe"
-            isActive={isCafeActive}
-            onClick={handleCafeToggle}
-            style={{
-              position: "absolute",
-              left: "35%",
-              top: "22%",
-            }}
-          />
-        </div>
-
-        {/* Visual Effects - Desktop */}
-        <div className="hidden md:block">
-          <AmbientButton
-            type="snow"
-            isActive={isSnowActive}
-            onClick={handleSnowToggle}
-            style={{
-              position: "absolute",
-              left: "20%",
-              top: "65%",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="fireflies"
-            isActive={isFirefliesActive}
-            onClick={handleFirefliesToggle}
-            style={{
-              position: "absolute",
-              right: "25%",
-              top: "60%",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="leaves"
-            isActive={isLeavesActive}
-            onClick={handleLeavesToggle}
-            style={{
-              position: "absolute",
-              left: "72%",
-              top: "18%",
-            }}
-          />
-        </div>
-
-        <div className="hidden md:block">
-          <AmbientButton
-            type="stars"
-            isActive={isStarsActive}
-            onClick={handleStarsToggle}
-            style={{
-              position: "absolute",
-              left: "15%",
-              top: "15%",
-            }}
-          />
-        </div>
-
-        {/* Mobile/Tablet Ambient Buttons - Positioned with safe padding */}
-        <div className="md:hidden">
-          <AmbientButton
-            type="rain"
-            isActive={isRainActive}
-            onClick={handleRainToggle}
-            style={{
-              position: "absolute",
-              left: "10%",
-              top: "30%",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="snow"
-            isActive={isSnowActive}
-            onClick={handleSnowToggle}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "30%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="fireflies"
-            isActive={isFirefliesActive}
-            onClick={handleFirefliesToggle}
-            style={{
-              position: "absolute",
-              left: "88%",
-              top: "30%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="birds"
-            isActive={isBirdsActive}
-            onClick={handleBirdsToggle}
-            style={{
-              position: "absolute",
-              left: "10%",
-              top: "39%",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="fire"
-            isActive={isFireActive}
-            onClick={handleFireToggle}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "39%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="leaves"
-            isActive={isLeavesActive}
-            onClick={handleLeavesToggle}
-            style={{
-              position: "absolute",
-              left: "88%",
-              top: "39%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="city"
-            isActive={isCityActive}
-            onClick={handleCityToggle}
-            style={{
-              position: "absolute",
-              left: "18%",
-              top: "56%",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="stars"
-            isActive={isStarsActive}
-            onClick={handleStarsToggle}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "56%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        <div className="md:hidden">
-          <AmbientButton
-            type="cafe"
-            isActive={isCafeActive}
-            onClick={handleCafeToggle}
-            style={{
-              position: "absolute",
-              right: "18%",
-              top: "56%",
-            }}
-          />
-        </div>
+        {/* Ambient sounds and visual effects. One set of nine controls; CSS decides
+            whether they scatter across the scene (desktop) or sit in a grid (mobile),
+            so the artwork stays uncluttered without duplicating the DOM. */}
+        <AmbientDock active={ambientActive} onToggle={handleAmbientToggle} />
 
         {/* Scene Carousel */}
         <SceneCarousel
@@ -1625,7 +1255,7 @@ function App() {
         isVisible={isToastVisible}
         onClose={() => setIsToastVisible(false)}
       />
-    </div>
+    </main>
   );
 }
 

@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
-import ogImage from 'figma:asset/7db81b3610163727be33cd6aa5798a9cd9e561ab.png';
+// The purpose-built 1200x630 card in public/. The Figma asset previously used
+// here was a 1000x1000 square, which contradicted the og:image:width/height
+// declared below and got cropped unpredictably by every scraper.
+const ogImage = '/og-image.png';
 
 export function MetaTags() {
   useEffect(() => {

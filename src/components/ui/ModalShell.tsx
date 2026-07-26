@@ -62,6 +62,7 @@ export function ModalShell({ title, description, children, onClose }) {
             flex-1
             overflow-y-auto
             custom-scroll
+            modal-scroll-fade
             px-6
             py-6
             modal-gap-6

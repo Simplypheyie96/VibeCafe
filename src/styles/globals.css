@@ -21,7 +21,9 @@
   --app-height: 100%;
 }
 
-@media (max-width: 768px) {
+/* 767px, not 768px: Tailwind's `md` starts at min-width 768px, so using 768 here
+   made both the mobile and desktop rules apply at exactly 768px. */
+@media (max-width: 767px) {
   html, body {
     height: 100%;
     overflow: hidden;
@@ -176,6 +178,26 @@ html, body {
   background: rgba(194, 122, 255, 0.6);
 }
 
+/* Modal bodies are scroll containers, so their content is cut mid-line at the
+   top and bottom edges. Fading those edges reads as "there is more" rather than
+   as a rendering fault. */
+.modal-scroll-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+}
+
 /* ============================
    CUSTOM ANIMATIONS
    ============================ */
@@ -290,7 +312,7 @@ button {
 }
 
 /* Larger touch targets for mobile sliders */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   input[type="range"]::-webkit-slider-thumb {
     width: 20px !important;
     height: 20px !important;
@@ -321,9 +343,9 @@ button {
    ============================ */
 
 @media (max-width: 767px) {
-  /* Container: sit closer to bottom, leave padding on both sides */
+  /* Container: sit above the home indicator, leave padding on both sides */
   .carousel-wrap {
-    bottom: 14px !important;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
     max-width: calc(100vw - 24px) !important;
     width: 100% !important;
   }
@@ -347,6 +369,113 @@ button {
   }
 }
 
+@media (min-width: 768px) {
+  .carousel-wrap {
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Fade the scroll row out at both edges so it reads as scrollable rather than
+   as thumbnails cut off by the viewport. The mask is dropped once the row fits
+   entirely on screen (no overflow => nothing to hint at). */
+.carousel-inner {
+  scroll-padding-inline: 24px;
+  overscroll-behavior-x: contain;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 22px,
+    #000 calc(100% - 22px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 22px,
+    #000 calc(100% - 22px),
+    transparent 100%
+  );
+}
+
+.carousel-inner[data-overflowing='false'] {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* ============================
+   AMBIENT DOCK
+   One set of nine controls, two layouts. Desktop scatters them loosely over the
+   scene at the positions carried on each slot as --dx/--dy; mobile lays the same
+   nine nodes out as a centred 3x3 grid between the genre tags and the now-playing
+   card. Previously these were two duplicated sets of buttons in the markup.
+   ============================ */
+
+.ambient-dock {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.ambient-dock-slot {
+  pointer-events: auto;
+}
+
+/* --- Desktop: free scatter --- */
+@media (min-width: 768px) {
+  .ambient-dock-slot {
+    position: absolute;
+    left: var(--dx);
+    top: var(--dy);
+  }
+
+  /* The centre control is nudged onto the exact middle of the scene. */
+  .ambient-dock-slot:nth-child(5) {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* --- Mobile: real grid, centred in the free band --- */
+@media (max-width: 767px) {
+  .ambient-dock {
+    top: calc(160px + env(safe-area-inset-top, 0px));
+    /* Clears the now-playing card (bottom: 112px, ~115px tall) and the carousel
+       below it. At 196px the bottom row of icons collided with the card on short
+       viewports such as 320x640. */
+    bottom: calc(244px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-content: center;
+    justify-items: center;
+    /* Row gap tracks viewport height so three rows always fit the free band
+       rather than spilling out of it on a short screen. */
+    gap: clamp(12px, 3.2vh, 34px) 8px;
+    padding: 0 20px;
+  }
+
+  .ambient-dock-slot {
+    /* --dx/--dy are desktop-only; make sure they cannot leak in here. */
+    position: static;
+    transform: none;
+  }
+}
+
+/* Short labels ride under the icons on mobile only. */
+@media (min-width: 768px) {
+  .ambient-label {
+    display: none;
+  }
+}
+
+/* Hover tooltips are dead weight on touch -- they can never be triggered. */
+@media (hover: none), (max-width: 767px) {
+  .ambient-tooltip {
+    display: none;
+  }
+}
+
 /* ============================
    AMBIENT BUTTON STYLES
    ============================ */
@@ -363,5 +492,25 @@ button {
     background: rgba(255, 255, 255, 0.15);
     border: 1.5px solid rgba(255, 255, 255, 0.35);
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ============================
+   FOCUS VISIBILITY
+   Keyboard users had no focus indication anywhere in the app.
+   ============================ */
+
+:where(button, a, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

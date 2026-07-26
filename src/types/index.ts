@@ -5,7 +5,27 @@ export interface Track {
   title: string;
   artist: string;
   duration: string;
+  /** Direct, CORS-enabled audio URL. Absent on legacy/custom placeholder tracks. */
+  src?: string;
+  /** Human-readable licence, e.g. "CC BY 4.0". */
+  license?: string;
+  /** Canonical licence deed URL. */
+  licenseUrl?: string;
+  /** Page the track came from — the attribution link required by CC BY §3(a)(1). */
+  sourceUrl?: string;
 }
+
+/** The nine curated moods, one per built-in scene. */
+export type Mood =
+  | 'warm-lofi'
+  | 'minimal-focus'
+  | 'nocturnal'
+  | 'bright-jazzy'
+  | 'lounge-jazz'
+  | 'dreamy-haze'
+  | 'melancholy-piano'
+  | 'neon-retro'
+  | 'mellow-groove';
 
 export interface Scene {
   id: number;
@@ -15,7 +35,13 @@ export interface Scene {
   genre: string;
   tags: string[];
   playlist: Track[];
-  musicUrl: string; // Streaming radio URL for lofi music
+  /** Which catalog bucket this scene draws its queue from. */
+  mood?: Mood;
+  /**
+   * Legacy single-stream URL. Retained so custom scenes (which are user-supplied
+   * single URLs) keep working; built-in scenes now play from `mood` instead.
+   */
+  musicUrl?: string;
   isCustom?: boolean; // Flag for custom scenes
 }
 

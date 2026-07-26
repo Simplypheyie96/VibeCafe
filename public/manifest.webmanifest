@@ -44,5 +44,21 @@
       "type": "image/png",
       "purpose": "monochrome"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.webp",
+      "sizes": "1280x800",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "A scene playing on desktop, with ambient sounds and the scene picker"
+    },
+    {
+      "src": "/screenshot-narrow.webp",
+      "sizes": "430x932",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "A scene playing on mobile, with the ambient sound grid and now-playing card"
+    }
   ]
 }

@@ -6,3 +6,6 @@ build/
 *.local
 .env
 .env.*
+
+# Local agent/editor config
+.claude/
