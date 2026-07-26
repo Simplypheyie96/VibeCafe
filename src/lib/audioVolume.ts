@@ -18,7 +18,7 @@
  *    `.volume` -- which is correct on desktop and a harmless no-op on iOS.
  *
  * The media must also be CORS-clean or the graph outputs silence; every host
- * this app uses (archive.org, mixkit, jsDelivr, githack) sends
+ * this app uses (jsDelivr, mixkit, githack) sends
  * `access-control-allow-origin: *`, and the elements carry `crossOrigin`.
  */
 
