@@ -26,13 +26,25 @@ export function SceneCarousel({ activeScene, onSceneChange }: SceneCarouselProps
 
   /* Selecting a scene from anywhere (keyboard arrows, presets, the dropdown) used
      to leave the carousel parked wherever it was, so the active thumbnail could
-     sit off-screen with no indication of which scene was live. */
+     sit off-screen with no indication of which scene was live.
+
+     Only when it is actually out of view, though. Re-centring on every change
+     meant clicking a thumbnail that was already sitting right there still slid
+     the whole row -- an animated scroll nobody asked for, on every single scene
+     change, which is what read as the carousel shaking. */
   useEffect(() => {
-    activeRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      inline: 'center',
-      block: 'nearest',
-    });
+    const btn = activeRef.current;
+    const row = rowRef.current;
+    if (!btn || !row) return;
+
+    const b = btn.getBoundingClientRect();
+    const r = row.getBoundingClientRect();
+    /* Inset by the edge mask, so a thumbnail technically in view but sitting
+       under the fade still counts as needing to be brought in. */
+    const EDGE = 24;
+    if (b.left >= r.left + EDGE && b.right <= r.right - EDGE) return;
+
+    btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }, [activeScene]);
 
   return (
@@ -62,10 +74,17 @@ export function SceneCarousel({ activeScene, onSceneChange }: SceneCarouselProps
                   : 'opacity-80 hover:opacity-100 hover:scale-[1.03] active:scale-[0.98]'
               }`}
             >
+              {/* Deliberately NOT `loading="lazy"`. The row overflows on most
+                  screens, so two or three thumbnails always sat outside the
+                  scroll viewport and were never fetched. Scrolling one in --
+                  which every scene change does -- revealed an empty box that
+                  only filled in once the request came back. That is the
+                  "blank for a second" on the carousel. Lazy loading is for
+                  long documents, not for nine 480w images totalling 164 KB
+                  that are part of the interface from first paint. */}
               <img
                 alt=""
                 aria-hidden="true"
-                loading="lazy"
                 decoding="async"
                 className="carousel-thumb-img absolute bg-clip-padding border-0 border-[transparent] border-solid inset-0 max-w-none object-cover rounded-[10.555px] size-full pointer-events-none"
                 src={scene.thumbnail}
