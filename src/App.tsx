@@ -22,7 +22,6 @@ import { InstallPrompt } from "./components/InstallPrompt";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { ChangeSceneModal } from "./components/ChangeSceneModal";
 import { CustomSceneDropdown } from "./components/CustomSceneDropdown";
-import { MetaTags } from "./components/MetaTags";
 import { useMusicPlayer } from "./hooks/useMusicPlayer";
 import { setVolume, unlockAudio } from "./lib/audioVolume";
 import { tracksForScene } from "./data/musicCatalog";
@@ -934,9 +933,6 @@ function App() {
       {/* The app is a single full-bleed canvas with no visible page title, but a
           screen reader still needs somewhere to land and a document heading. */}
       <h1 className="sr-only">VibeCafe — lofi music and ambient sounds</h1>
-
-      {/* Meta tags for social sharing */}
-      <MetaTags />
 
       {/* Every browser requires a gesture before audio; this makes it the front door
           rather than a silent failure the user has to work out for themselves. */}
