@@ -74,6 +74,8 @@ function App() {
   const [presets, setPresets] = useState<Preset[]>([]);
   const [sceneTransitioning, setSceneTransitioning] =
     useState(false);
+  /** The live wallpaper element, read to keep the ken-burns loop continuous. */
+  const sceneImgRef = useRef<HTMLImageElement>(null);
   const [musicVolume, setMusicVolume] = useState(70);
   const [rainVolume, setRainVolume] = useState(50);
   const [cityVolume, setCityVolume] = useState(50);
@@ -404,9 +406,64 @@ function App() {
   useEffect(() => applyVolume(birdsAudioRef, birdsVolume), [birdsVolume, isLoading]);
   useEffect(() => applyVolume(cafeAudioRef, cafeVolume), [cafeVolume, isLoading]);
 
+  /**
+   * Where the 60s ken-burns loop had got to when the last scene change started.
+   *
+   * The outgoing copy of a scene is a different element from the one that was on
+   * screen, so it starts its own animation from zero. At 60s the loop travels
+   * between scale(1.1) and scale(1.2), which means a clone starting fresh pops to
+   * a different zoom on its first frame -- read as a shake, right as the dissolve
+   * begins. Handing the clone the phase we were actually at makes it continue the
+   * movement instead of restarting it.
+   */
+  const kenBurnsPhaseRef = useRef(0);
+
+  const captureKenBurnsPhase = () => {
+    const anim = sceneImgRef.current?.getAnimations?.()[0];
+    const t = anim?.currentTime;
+    kenBurnsPhaseRef.current = typeof t === 'number' ? t : 0;
+  };
+
+  /** Apply the captured phase to the outgoing clone as it mounts. */
+  const adoptKenBurnsPhase = (el: HTMLImageElement | null) => {
+    const anim = el?.getAnimations?.()[0];
+    if (anim) anim.currentTime = kenBurnsPhaseRef.current;
+  };
+
+  /**
+   * Ends the transition once the dissolve has finished.
+   *
+   * Held in a ref and cleared first, because these used to be bare setTimeouts.
+   * Switching scenes twice inside 900ms left the first timer running, and it
+   * would fire mid-way through the second transition, unmounting the outgoing
+   * layer early and hard-cutting the picture. That is why the glitch only showed
+   * up sometimes: it needed two changes close together.
+   */
+  const transitionTimerRef = useRef<number | null>(null);
+
+  const armTransitionTimer = () => {
+    if (transitionTimerRef.current !== null) clearTimeout(transitionTimerRef.current);
+    // Matches the 900ms `scene-dissolve` duration in globals.css.
+    transitionTimerRef.current = window.setTimeout(() => {
+      setSceneTransitioning(false);
+      transitionTimerRef.current = null;
+    }, 900);
+  };
+
+  useEffect(
+    () => () => {
+      if (transitionTimerRef.current !== null) clearTimeout(transitionTimerRef.current);
+    },
+    [],
+  );
+
   // Handle scene change with smooth transition
   const handleSceneChange = (sceneId: number) => {
     if (sceneId === activeScene) return;
+
+    // Read off the live animation before React re-renders, while the element on
+    // screen is still the outgoing scene.
+    captureKenBurnsPhase();
 
     startTransition(() => {
       setPrevScene(activeScene);
@@ -418,8 +475,7 @@ function App() {
       const scene = getScene(sceneId);
       trackSceneChange(scene.name, sceneId, scene.isCustom || false);
 
-      // Matches the 900ms `scene-dissolve` duration in globals.css.
-      setTimeout(() => setSceneTransitioning(false), 900);
+      armTransitionTimer();
     });
   };
 
@@ -609,19 +665,22 @@ function App() {
     // Show toast
     showToast(`Scene \"${sceneName}\" modified!`);
     
-    // Switch to the new scene immediately
+    // Switch to the new scene immediately. Same path as handleSceneChange: read
+    // the live ken-burns phase before the re-render, and end the transition
+    // through the shared timer so editing a scene while another change is still
+    // dissolving cannot cut that one short.
+    captureKenBurnsPhase();
     setPrevScene(activeScene);
     setSceneTransitioning(true);
-    
+    armTransitionTimer();
+
     setTimeout(() => {
       setActiveScene(modifiedScene.id);
+      // Held until after the dissolve has finished, so getScene can still resolve
+      // the new scene for the whole transition.
       setTimeout(() => {
-        setSceneTransitioning(false);
-        // Clear the pending ref after transition completes
-        setTimeout(() => {
-          pendingCustomSceneRef.current = null;
-        }, 100);
-      }, 700);
+        pendingCustomSceneRef.current = null;
+      }, 900);
     }, 50);
   };
 
@@ -961,9 +1020,23 @@ function App() {
             underneath, so the transition dissolves the old scene away to reveal
             this one. Fading this one up instead meant both images were partly
             transparent at once and the page background showed through -- every
-            scene change dipped to near-black in the middle. */}
+            scene change dipped to near-black in the middle.
+
+            Deliberately un-keyed. Keying this on the scene id made React throw the
+            element away and build a new one on every change, and a brand-new <img>
+            paints nothing at all until its source decodes -- so the layer meant to
+            be underneath the dissolve was blank, and the scene went empty for a
+            moment before appearing. Reusing one element means the browser keeps
+            showing the previous frame until the next one is ready, which is the
+            behaviour the comment above always assumed.
+
+            No per-scene animationDelay either: changing that value restarts the
+            ken-burns loop, and restarting a transform animation part-way is the
+            jump that read as a shake. Left alone the loop simply keeps running
+            across scene changes, which also gets the varied starting zoom the
+            delay was added for. */}
         <img
-          key={`curr-${currentScene.id}`}
+          ref={sceneImgRef}
           src={
             currentScene.wallpaper?.startsWith("blob:")
               ? `${currentScene.wallpaper}?v=${currentScene.id}`
@@ -971,12 +1044,7 @@ function App() {
           }
           alt={currentScene.name}
           className="absolute inset-0 w-full h-full object-cover object-center animate-scene-motion"
-          style={{
-            objectPosition: "center center",
-            /* Offset each scene's ken-burns loop so arriving somewhere doesn't
-               always snap to the same starting zoom. */
-            animationDelay: `-${(currentScene.id % 9) * 6.5}s`,
-          }}
+          style={{ objectPosition: "center center" }}
         />
 
         {/* Outgoing scene, above and dissolving. Unmounts when the animation
@@ -987,7 +1055,12 @@ function App() {
             className="scene-outgoing absolute inset-0 z-10"
             aria-hidden="true"
           >
+            {/* A fresh element, so its ken-burns loop would otherwise start from
+                zero while the scene it is standing in for was mid-way through --
+                a visible jump in zoom at the exact moment the dissolve begins.
+                The ref hands it the phase we were actually at. */}
             <img
+              ref={adoptKenBurnsPhase}
               src={
                 previousScene.wallpaper?.startsWith("blob:")
                   ? `${previousScene.wallpaper}?v=${previousScene.id}`
@@ -995,10 +1068,7 @@ function App() {
               }
               alt=""
               className="w-full h-full object-cover object-center animate-scene-motion"
-              style={{
-                objectPosition: "center center",
-                animationDelay: `-${(previousScene.id % 9) * 6.5}s`,
-              }}
+              style={{ objectPosition: "center center" }}
             />
           </div>
         )}
