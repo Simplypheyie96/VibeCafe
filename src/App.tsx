@@ -405,18 +405,15 @@ function App() {
     startTransition(() => {
       setPrevScene(activeScene);
       setSceneTransitioning(true);
+      // Swapped in immediately: it renders underneath the outgoing scene, which
+      // is what the dissolve above uncovers. Delaying it left a frame of nothing.
+      setActiveScene(sceneId);
 
-      setTimeout(() => {
-        setActiveScene(sceneId);
+      const scene = getScene(sceneId);
+      trackSceneChange(scene.name, sceneId, scene.isCustom || false);
 
-        // Track scene change in analytics
-        const scene = getScene(sceneId);
-        trackSceneChange(scene.name, sceneId, scene.isCustom || false);
-
-        setTimeout(() => {
-          setSceneTransitioning(false);
-        }, 700);
-      }, 50);
+      // Matches the 900ms `scene-dissolve` duration in globals.css.
+      setTimeout(() => setSceneTransitioning(false), 900);
     });
   };
 
@@ -952,22 +949,11 @@ function App() {
           right: 0
         }}
       >
-        {/* Previous Scene */}
-        {sceneTransitioning && (
-          <img
-            key={`prev-${previousScene.id}`}
-            src={
-              previousScene.wallpaper?.startsWith("blob:")
-                ? `${previousScene.wallpaper}?v=${previousScene.id}`
-                : previousScene.wallpaper
-            }
-            alt={previousScene.name}
-            className="absolute inset-0 w-full h-full object-cover object-center opacity-100 transition-opacity duration-700 animate-scene-motion"
-            style={{ objectPosition: "center center" }}
-          />
-        )}
-
-        {/* Current Scene */}
+        {/* Current scene. Held at full opacity throughout the change and layered
+            underneath, so the transition dissolves the old scene away to reveal
+            this one. Fading this one up instead meant both images were partly
+            transparent at once and the page background showed through -- every
+            scene change dipped to near-black in the middle. */}
         <img
           key={`curr-${currentScene.id}`}
           src={
@@ -976,11 +962,38 @@ function App() {
               : currentScene.wallpaper
           }
           alt={currentScene.name}
-          className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 animate-scene-motion ${
-            sceneTransitioning ? "opacity-0" : "opacity-100"
-          }`}
-          style={{ objectPosition: "center center" }}
+          className="absolute inset-0 w-full h-full object-cover object-center animate-scene-motion"
+          style={{
+            objectPosition: "center center",
+            /* Offset each scene's ken-burns loop so arriving somewhere doesn't
+               always snap to the same starting zoom. */
+            animationDelay: `-${(currentScene.id % 9) * 6.5}s`,
+          }}
         />
+
+        {/* Outgoing scene, above and dissolving. Unmounts when the animation
+            finishes, which is what `sceneTransitioning` is timed against. */}
+        {sceneTransitioning && (
+          <div
+            key={`prev-${previousScene.id}`}
+            className="scene-outgoing absolute inset-0 z-10"
+            aria-hidden="true"
+          >
+            <img
+              src={
+                previousScene.wallpaper?.startsWith("blob:")
+                  ? `${previousScene.wallpaper}?v=${previousScene.id}`
+                  : previousScene.wallpaper
+              }
+              alt=""
+              className="w-full h-full object-cover object-center animate-scene-motion"
+              style={{
+                objectPosition: "center center",
+                animationDelay: `-${(previousScene.id % 9) * 6.5}s`,
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Visual Animations */}
@@ -1129,7 +1142,6 @@ function App() {
           sourceUrl={currentTrack.sourceUrl}
           state={player.state}
           onPlayPause={handlePlayPause}
-          onNext={sceneTracks.length > 1 ? player.next : undefined}
         />
 
         {/* Ambient sounds and visual effects. One set of nine controls; CSS decides

@@ -34,7 +34,11 @@ interface AmbientDockProps {
 
 export function AmbientDock({ active, onToggle }: AmbientDockProps) {
   return (
-    <div className="ambient-dock" role="group" aria-label="Ambient sounds and effects">
+    <div
+      className="ambient-dock rise-in rise-delay-3"
+      role="group"
+      aria-label="Ambient sounds and effects"
+    >
       {LAYOUT.map(({ key, left, top }) => (
         <div
           key={key}

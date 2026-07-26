@@ -16,7 +16,7 @@ export function GenreTags({ tags }: GenreTagsProps) {
 
   return (
     <div
-      className="absolute z-40 left-4 right-4 top-[104px] overflow-x-auto scrollbar-hide
+      className="rise-in rise-delay-1 absolute z-40 left-4 right-4 top-[104px] overflow-x-auto scrollbar-hide
                  md:left-[24px] md:right-auto md:top-[96px] md:overflow-visible"
     >
       <div className="flex items-center gap-2 py-1">

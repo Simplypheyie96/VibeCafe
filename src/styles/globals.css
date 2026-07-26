@@ -229,6 +229,74 @@ html, body {
   will-change: transform;
 }
 
+/* The outgoing scene during a change. It recedes and softens rather than simply
+   disappearing, so the new scene reads as arriving in front of it.
+
+   This sits on a wrapper, not on the <img>: the image is already running the
+   60s ken-burns loop, and two animations competing for `transform` on one
+   element means the last one declared silently wins. */
+@keyframes scene-dissolve {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(7px);
+  }
+}
+
+.scene-outgoing {
+  animation: scene-dissolve 900ms cubic-bezier(0.33, 0, 0.2, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+
+/* Chrome arriving after the loading screen clears. Panels rise in sequence
+   instead of the whole interface appearing in one frame. */
+/* Ends on `transform: none`, not `translateY(0)`. With `animation-fill-mode:
+   both` the final frame is retained, and any transform -- even a zero one --
+   makes the element a containing block for absolutely positioned descendants.
+   These panels have plenty of those, so the transform has to actually go away. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in {
+  animation: rise-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.rise-delay-1 { animation-delay: 80ms; }
+.rise-delay-2 { animation-delay: 160ms; }
+.rise-delay-3 { animation-delay: 240ms; }
+.rise-delay-4 { animation-delay: 320ms; }
+
+/* A track handing over to the next one. The queue is continuous and has no
+   skip control, so this is the only signal that anything changed -- without it
+   the title swaps between frames and the stream looks frozen. */
+@keyframes track-swap {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.track-swap {
+  animation: track-swap 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
