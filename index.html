@@ -6,6 +6,14 @@
     <title>VibeCafe — Lofi · Chill · Focus</title>
     <meta name="description" content="Your personal lofi space. Pick a scene, set the mood, and get into your flow." />
 
+    <!-- Painted before anything else loads. Without this the browser shows its
+         default white canvas from first paint until React mounts and the loading
+         screen's own background takes over -- a white flash on every cold load.
+         `color-scheme` keeps form controls, scrollbars and overscroll dark too. -->
+    <style>
+      html, body { background-color: #1a1614; color-scheme: dark; }
+    </style>
+
     <!-- PWA -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#1B1613" />
@@ -18,10 +26,22 @@
          actually loaded, so until now every visitor saw the system sans-serif. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Loaded without blocking first paint: as a render-blocking <link> this
+         held the whole page white until Google responded. `display=swap` already
+         means text renders in the fallback face and swaps when the font lands,
+         so nothing is lost by not waiting for it. -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'; this.onload=null;"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
