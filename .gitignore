@@ -9,3 +9,6 @@ build/
 
 # Local agent/editor config
 .claude/
+
+# Console logs and page dumps written by the Playwright MCP during UI checks
+.playwright-mcp/
