@@ -165,7 +165,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
           layout
           initial={false}
           animate={isExpanded ? { x: 0, y: 0 } : {}}
-          className={`pointer-events-auto bg-[rgba(0,0,0,0.4)] backdrop-blur-xl border border-[rgba(255,255,255,0.2)] shadow-[0px_10px_15px_0px_rgba(0,0,0,0.1),0px_4px_6px_0px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden ${
+          className={`pointer-events-auto glass glass-deep flex flex-col overflow-hidden ${
             isExpanded
               ? 'w-[90vw] max-w-[500px] rounded-[16px]'
               : 'w-[320px] rounded-[10px] absolute bottom-6 right-6 cursor-grab active:cursor-grabbing'

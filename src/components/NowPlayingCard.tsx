@@ -35,11 +35,13 @@ export function NowPlayingCard({
         : 'Paused';
 
   return (
+    // `bottom-[110px]` puts the card one 16px gap above the mobile carousel
+    // (which sits at 14px and stands 80px tall) so the two read as one bottom
+    // cluster. At 200px it floated mid-screen with a 100px hole underneath.
     <div
-      className="now-playing-card rise-in rise-delay-2 absolute z-30 flex flex-col gap-2
-                 rounded-[14px] border border-white/30 bg-white/20 px-4 py-3.5 backdrop-blur-xl
-                 shadow-xl shadow-black/30
-                 left-4 right-4 bottom-[200px]
+      className="now-playing-card glass rise-in rise-delay-2 absolute z-30 flex flex-col gap-2
+                 rounded-[14px] px-4 py-3.5
+                 left-4 right-4 bottom-[calc(110px+env(safe-area-inset-bottom,0px))]
                  sm:left-6 sm:right-6 sm:max-w-[400px]
                  md:left-[31px] md:right-auto md:top-[534px] md:bottom-auto md:w-[221px] md:rounded-[16px]"
     >

@@ -102,7 +102,7 @@ export function AestheticCarousel({
   return (
     <div className="fixed bottom-[40px] left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
       {/* Carousel container matching Figma design */}
-      <div className="bg-black/20 backdrop-blur-xl border border-white/20 rounded-[18.999px] p-px">
+      <div className="glass rounded-[18.999px] p-px">
         <div
           ref={scrollRef}
           onMouseDown={handleMouseDown}

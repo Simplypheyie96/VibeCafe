@@ -143,7 +143,7 @@ export function InstallPrompt() {
   }
 
   return (
-    <div className="install-banner fixed z-[60] flex items-center gap-3 rounded-full border border-white/25 bg-black/50 py-2 pl-4 pr-2 backdrop-blur-xl shadow-lg shadow-black/40 animate-fadeIn">
+    <div className="install-banner glass fixed z-[60] flex items-center gap-3 rounded-full py-2 pl-4 pr-2 animate-fadeIn">
       <Download aria-hidden="true" className="size-4 shrink-0 text-white/80" />
       <p className="whitespace-nowrap text-[13px] text-white/90">Install VibeCafe</p>
       <button

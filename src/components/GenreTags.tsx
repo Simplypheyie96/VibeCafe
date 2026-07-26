@@ -20,7 +20,7 @@ export function GenreTags({ tags }: GenreTagsProps) {
                  md:left-[24px] md:right-auto md:top-[96px] md:overflow-visible"
     >
       <div className="flex items-center gap-2 py-1">
-        <span className="flex flex-shrink-0 items-center gap-2.5 rounded-full bg-white/15 px-3.5 py-1.5 backdrop-blur-xl border border-white/30 shadow-lg shadow-black/20">
+        <span className="glass glass-chip flex flex-shrink-0 items-center gap-2.5 rounded-full px-3.5 py-1.5">
           <span
             aria-hidden="true"
             className="size-[8px] flex-shrink-0 rounded-full bg-[#05df72] opacity-80 shadow-sm shadow-[#05df72]/50"
@@ -33,7 +33,7 @@ export function GenreTags({ tags }: GenreTagsProps) {
         {rest.map((tag) => (
           <span
             key={tag}
-            className="flex flex-shrink-0 items-center rounded-full bg-white/15 px-3.5 py-1.5 backdrop-blur-xl border border-white/30 shadow-lg shadow-black/20"
+            className="glass glass-chip flex flex-shrink-0 items-center rounded-full px-3.5 py-1.5"
           >
             <span className="whitespace-nowrap text-[13px] md:text-[14px] leading-none text-white tracking-[-0.1504px]">
               {tag}

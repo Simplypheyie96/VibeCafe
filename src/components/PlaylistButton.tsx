@@ -71,7 +71,7 @@ export function PlaylistButton({ name, service, isActive, onClick, style }: Play
         className={`relative size-14 md:size-16 rounded-full flex items-center justify-center transition-all duration-300 ${
           isActive
             ? `bg-gradient-to-br ${colors.gradient} shadow-lg ${colors.shadow}`
-            : 'bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/15 group-hover:border-white/30'
+            : 'glass glass-chip'
         }`}
       >
         <Music2

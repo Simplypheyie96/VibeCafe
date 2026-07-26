@@ -36,11 +36,7 @@ export function SceneCarousel({ activeScene, onSceneChange }: SceneCarouselProps
   }, [activeScene]);
 
   return (
-    <div className="carousel-wrap fixed bottom-[40px] left-1/2 -translate-x-1/2 z-40 bg-[rgba(0,0,0,0.28)] backdrop-blur-md rounded-[18.999px] w-full max-w-[calc(100vw-32px)] md:w-max md:max-w-[95vw] shadow-lg shadow-black/30 pointer-events-auto">
-      <div
-        aria-hidden="true"
-        className="absolute border border-[rgba(255,255,255,0.35)] border-solid inset-0 pointer-events-none rounded-[18.999px] z-10"
-      />
+    <div className="carousel-wrap glass fixed bottom-[40px] left-1/2 -translate-x-1/2 z-40 rounded-[18.999px] w-full max-w-[calc(100vw-32px)] md:w-max md:max-w-[95vw] pointer-events-auto">
       <div
         ref={rowRef}
         role="tablist"

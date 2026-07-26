@@ -75,13 +75,20 @@ export function AmbientButton({ type, isActive, onClick, style }: AmbientButtonP
         aria-label={label}
         aria-pressed={isActive}
         title={label}
-        className={`ambient-button box-border flex size-[48px] items-center justify-center relative rounded-[16px] transition-all duration-300 cursor-pointer backdrop-blur-md active:scale-95 touch-manipulation outline-none focus-visible:ring-2 focus-visible:ring-white/90 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 ${
+        /* Inactive is the app's shared glass, same as every other panel. Active
+           swaps in the sound's own colour, which is the one place a surface is
+           allowed to leave the recipe -- it is carrying state, not chrome. */
+        className={`ambient-button glass glass-chip box-border flex size-[48px] items-center justify-center relative rounded-[16px] transition-all duration-300 cursor-pointer active:scale-95 touch-manipulation outline-none focus-visible:ring-2 focus-visible:ring-white/90 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 ${
           isActive ? 'scale-105 active-button' : 'hover:scale-105'
         }`}
         style={{
-          background: isActive ? colors.bg : 'rgba(255, 255, 255, 0.15)',
-          border: isActive ? `1.5px solid ${colors.border}` : '1px solid rgba(255, 255, 255, 0.25)',
-          boxShadow: isActive ? colors.glow : '0px 4px 12px rgba(0, 0, 0, 0.2)',
+          ...(isActive
+            ? {
+                background: colors.bg,
+                border: `1.5px solid ${colors.border}`,
+                boxShadow: colors.glow,
+              }
+            : null),
           pointerEvents: 'auto',
           WebkitTapHighlightColor: 'transparent',
         }}

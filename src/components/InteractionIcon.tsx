@@ -41,10 +41,8 @@ export function InteractionIcon({
     >
       {/* Icon container with glow - matching Figma design */}
       <div
-        className={`relative w-12 h-12 rounded-2xl backdrop-blur-xl transition-all duration-500 flex items-center justify-center ${
-          isActive
-            ? 'bg-white/30 ring-2 ring-white/60 shadow-2xl shadow-white/40'
-            : 'bg-black/20 border border-white/20 hover:bg-white/20 hover:border-white/40'
+        className={`glass glass-chip relative w-12 h-12 rounded-2xl transition-all duration-500 flex items-center justify-center ${
+          isActive ? 'ring-2 ring-white/60 shadow-2xl shadow-white/40' : ''
         }`}
         style={{
           transform: isHovered ? 'scale(1.15)' : 'scale(1)'

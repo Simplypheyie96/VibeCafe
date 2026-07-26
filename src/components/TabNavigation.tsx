@@ -24,7 +24,7 @@ function Tab({
   isActive,
   onClick,
   children,
-  pillClassName = 'px-[6px] min-[380px]:px-[13px]',
+  pillClassName = 'px-[6px] md:px-[13px]',
 }: {
   label: string;
   isActive: boolean;
@@ -40,7 +40,7 @@ function Tab({
       aria-pressed={isActive}
       className="relative shrink-0 flex h-[42px] items-center rounded-[20px]
                  after:absolute after:inset-y-0 after:-inset-x-[5px] after:content-['']
-                 min-[380px]:after:-inset-x-[8px]
+                 md:after:-inset-x-[8px]
                  outline-none focus-visible:ring-2 focus-visible:ring-white
                  focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
     >
@@ -79,22 +79,23 @@ interface TabNavigationProps {
 
 export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSettings }: TabNavigationProps) {
   return (
-    <div className="absolute left-1/2 -translate-x-1/2 top-[20px] md:top-[24px] z-40 flex items-center gap-[8px] min-[380px]:gap-[12px] md:gap-[24px]">
+    // Full-width and padded rather than `left-1/2 -translate-x-1/2` on a
+    // content-sized box: that centred the row but put no floor under it, so on a
+    // narrow phone the two pill groups simply ran off both edges of the screen.
+    // `pointer-events-none` keeps the now-transparent full-width strip from
+    // swallowing taps meant for the scene behind it.
+    <div
+      className="absolute inset-x-0 top-[20px] md:top-[24px] z-40 pointer-events-none
+                 flex items-center justify-center
+                 px-3 md:px-4 md:px-6
+                 gap-[6px] md:gap-[12px] md:gap-[24px]"
+    >
       {/* Tab Pills Container */}
       <div
-        className="relative flex items-center rounded-full px-[9px] min-[380px]:px-[13px] py-px h-[44px]
-                   gap-[10px] min-[380px]:gap-[16px] md:gap-[24px]"
-        style={{
-          backgroundImage:
-            'linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 100%), linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 100%)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-        }}
+        className="glass pointer-events-auto relative flex items-center rounded-full py-px h-[44px]
+                   px-[7px] md:px-[13px]
+                   gap-[8px] md:gap-[16px] md:gap-[24px]"
       >
-        <div
-          aria-hidden="true"
-          className="absolute border border-[rgba(255,255,255,0.4)] border-solid inset-0 pointer-events-none rounded-full"
-        />
 
         {/* Scenes Tab */}
         <Tab
@@ -103,7 +104,7 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
           onClick={() => onTabChange('scenes')}
           /* Fixed width rather than padding, so the widest label does not make
              the pill jump between scenes. */
-          pillClassName="w-[70px] min-[380px]:w-[88px]"
+          pillClassName="w-[62px] md:w-[88px]"
         >
           <span className="tracking-[-0.26px]">Scenes</span>
         </Tab>
@@ -115,8 +116,8 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
           onClick={() => onTabChange('playlists')}
         >
           {/* "My" is dropped on the narrowest phones so the row still fits. */}
-          <span className="min-[380px]:hidden">Playlist</span>
-          <span className="hidden min-[380px]:inline">My Playlist</span>
+          <span className="min-[360px]:hidden">Playlist</span>
+          <span className="hidden min-[360px]:inline">My Playlist</span>
         </Tab>
 
         {/* About Tab */}
@@ -131,26 +132,17 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
 
       {/* Icon Buttons Container */}
       <div
-        className="relative flex items-center rounded-full px-[9px] min-[380px]:px-[13px] py-px h-[44px]
-                   gap-[14px] min-[380px]:gap-[20px] md:gap-[24px]"
-        style={{
-          backgroundImage:
-            'linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 100%), linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 100%)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-        }}
+        className="glass pointer-events-auto relative flex items-center rounded-full py-px h-[44px]
+                   px-[7px] md:px-[13px]
+                   gap-[12px] md:gap-[20px] md:gap-[24px]"
       >
-        <div
-          aria-hidden="true"
-          className="absolute border border-[rgba(255,255,255,0.4)] border-solid inset-0 pointer-events-none rounded-full"
-        />
 
         {/* Change Scene Icon (Image file icon) */}
         <div className="group relative flex items-center justify-center">
           <button
             onClick={onChangeScene}
             className="relative flex items-center justify-center shrink-0 size-[24px] hover:scale-110 active:scale-95 transition-transform duration-200
-                       after:absolute after:content-[''] after:-inset-y-[10px] after:-inset-x-[7px] min-[380px]:after:-inset-x-[10px]
+                       after:absolute after:content-[''] after:-inset-y-[10px] after:-inset-x-[7px] md:after:-inset-x-[10px]
                        rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-[6px] focus-visible:ring-offset-black/40"
             aria-label="Change scene"
           >
@@ -174,7 +166,7 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
           <button
             onClick={onOpenSettings}
             className="relative flex items-center justify-center shrink-0 size-[24px] hover:scale-110 hover:rotate-45 active:scale-95 transition-all duration-300
-                       after:absolute after:content-[''] after:-inset-y-[10px] after:-inset-x-[7px] min-[380px]:after:-inset-x-[10px]
+                       after:absolute after:content-[''] after:-inset-y-[10px] after:-inset-x-[7px] md:after:-inset-x-[10px]
                        rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-[6px] focus-visible:ring-offset-black/40"
             aria-label="Settings"
           >

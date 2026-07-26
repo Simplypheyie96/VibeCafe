@@ -203,6 +203,57 @@ html, body {
 }
 
 /* ============================
+   GLASS SURFACES
+   ============================ */
+
+/* One frosted recipe for every panel in the app.
+ *
+ * These surfaces had drifted badly: six different base colours (white/10,
+ * white/15, white/20, black/20, black/28, black/40), four blur strengths
+ * (sm/md/lg/xl) and five border treatments including none at all. Some panels
+ * were tinted white and some black, so against the same wallpaper they read as
+ * different materials sitting at different depths.
+ *
+ * The recipe is the one the tab bar already used, since it survives the widest
+ * range of wallpapers: a dark tint for text contrast, a white lift over the top
+ * so the panel still reads as glass rather than a grey box, and a border bright
+ * enough to define an edge against a busy scene. Saturation is boosted slightly
+ * because heavy blur washes colour out of whatever is behind it.
+ */
+:root {
+  --glass-tint: rgba(0, 0, 0, 0.22);
+  --glass-lift: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.38);
+  --glass-blur: 24px;
+  --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.glass {
+  background-color: var(--glass-tint);
+  /* A flat gradient rather than a second colour: `background-color` is already
+     carrying the tint, and this layers the white lift over it in one paint. */
+  background-image: linear-gradient(var(--glass-lift), var(--glass-lift));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Menus and modals, which sit over content rather than beside it and need to
+   actually occlude what is behind them. */
+.glass-deep {
+  --glass-tint: rgba(0, 0, 0, 0.52);
+  --glass-blur: 28px;
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+}
+
+/* Small controls -- pills, chips, icon buttons. Same material, lighter shadow,
+   so a row of them doesn't stack into a dark band. */
+.glass-chip {
+  --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+}
+
+/* ============================
    CUSTOM ANIMATIONS
    ============================ */
 
@@ -507,30 +558,38 @@ button {
   }
 }
 
-/* --- Mobile: real grid, centred in the free band --- */
+/* --- Mobile: scatter, inside a band that clears the other chrome ---
+   These were briefly a 3x3 grid, which read as a keypad bolted onto a
+   photograph. The band is bounded rather than the buttons being pinned to
+   viewport percentages: `--mx`/`--my` resolve against the free space between
+   the genre tags and the now-playing card, so the scatter re-spreads with the
+   screen instead of drifting into the chrome above or below it. */
 @media (max-width: 767px) {
   .ambient-dock {
-    top: calc(160px + env(safe-area-inset-top, 0px));
-    /* Clears the now-playing card (bottom: 112px, ~115px tall) and the carousel
-       below it. At 196px the bottom row of icons collided with the card on short
-       viewports such as 320x640. */
-    bottom: calc(244px + env(safe-area-inset-bottom, 0px));
+    top: calc(148px + env(safe-area-inset-top, 0px));
+    bottom: calc(252px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-content: center;
-    justify-items: center;
-    /* Row gap tracks viewport height so three rows always fit the free band
-       rather than spilling out of it on a short screen. */
-    gap: clamp(12px, 3.2vh, 34px) 8px;
-    padding: 0 20px;
   }
 
   .ambient-dock-slot {
-    /* --dx/--dy are desktop-only; make sure they cannot leak in here. */
-    position: static;
-    transform: none;
+    position: absolute;
+    left: var(--mx);
+    top: var(--my);
+    /* Centre-anchored horizontally: `--mx` is where the icon sits, not where
+       its box starts, which is what keeps the columns visually irregular
+       rather than irregular-by-a-label-width. */
+    transform: translateX(-50%);
+  }
+}
+
+/* The desktop card is pinned at 534px, which is where the design puts it on a
+   tall window. On a short one (a 1280x800 laptop) that fixed offset ran the card
+   straight through the scene carousel. The cap only engages below ~914px of
+   viewport height, so the intended position is untouched everywhere else. */
+@media (min-width: 768px) {
+  .now-playing-card {
+    top: min(534px, calc(100dvh - 380px));
   }
 }
 
@@ -541,6 +600,17 @@ button {
   }
 }
 
+@media (max-width: 767px) and (max-height: 640px) {
+  .ambient-label {
+    display: none;
+  }
+
+  .ambient-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 /* Hover tooltips are dead weight on touch -- they can never be triggered. */
 @media (hover: none), (max-width: 767px) {
   .ambient-tooltip {
@@ -548,24 +618,10 @@ button {
   }
 }
 
-/* ============================
-   AMBIENT BUTTON STYLES
-   ============================ */
-
-/* Ambient button styles - transparent on mobile, glassmorphic on desktop */
-.ambient-button {
-  background: transparent;
-  border: 1.5px solid transparent;
-  box-shadow: none;
-}
-
-@media (min-width: 768px) {
-  .ambient-button:not(.active-button) {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1.5px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
-  }
-}
+/* The ambient buttons used to carry their own transparent-on-mobile,
+   glassmorphic-on-desktop rules here, which fought the inline styles on the
+   element and lost. They now use the shared `.glass` recipe like everything
+   else, so there is nothing left to override. */
 
 /* ============================
    FOCUS VISIBILITY
