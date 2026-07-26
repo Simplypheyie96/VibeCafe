@@ -15,7 +15,11 @@ export interface Track {
   sourceUrl?: string;
 }
 
-/** The nine curated moods, one per built-in scene. */
+/**
+ * The curated moods. The first nine are each sourced from their own set of
+ * recordings; `study-lofi` is composed from tracks that already live in the
+ * others, so a track may belong to more than one mood.
+ */
 export type Mood =
   | 'warm-lofi'
   | 'minimal-focus'
@@ -25,7 +29,8 @@ export type Mood =
   | 'dreamy-haze'
   | 'melancholy-piano'
   | 'neon-retro'
-  | 'mellow-groove';
+  | 'mellow-groove'
+  | 'study-lofi';
 
 export interface Scene {
   id: number;

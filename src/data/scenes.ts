@@ -37,10 +37,10 @@ export const scenes: Scene[] = [
     name: 'Cozy Study',
     thumbnail: thumb('cozy-study'),
     wallpaper: bg('cozy-study'),
-    genre: 'Warm Anime Lofi',
+    genre: 'Study Lofi',
     tags: ['Studying', 'Cozy & Slow'],
-    mood: 'mellow-groove',
-    playlist: MOOD_TRACKS['mellow-groove'],
+    mood: 'study-lofi',
+    playlist: MOOD_TRACKS['study-lofi'],
   },
   {
     id: 2,
