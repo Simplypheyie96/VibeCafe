@@ -37,7 +37,10 @@ import type { Mood, Scene, Track } from '../types';
  * Every URL below was checked for a 200 response with CORS headers. Regenerate
  * via scripts rather than hand-editing.
  */
-export const MOOD_TRACKS: Record<Mood, Track[]> = {
+/** The nine moods that own their recordings. `study-lofi` is built from these. */
+type SourcedMood = Exclude<Mood, 'study-lofi'>;
+
+const SOURCED: Record<SourcedMood, Track[]> = {
   'warm-lofi': [
     {
       id: 'jamendo-470094:01-1917940-Sevennotes-The Soul Chill.mp3',
@@ -1238,7 +1241,81 @@ export const MOOD_TRACKS: Record<Mood, Track[]> = {
   ],
 };
 
-export const ALL_TRACKS: Track[] = Object.values(MOOD_TRACKS).flat();
+/**
+ * Pull named tracks out of a sourced mood, in the order given.
+ *
+ * Throws rather than skipping a miss. A silently dropped track would just make
+ * a queue quietly shorter, which is exactly the kind of thing nobody notices
+ * until a scene has four songs in it.
+ */
+function pick(mood: SourcedMood, ...titles: string[]): Track[] {
+  return titles.map((title) => {
+    const track = SOURCED[mood].find((t) => t.title === title);
+    if (!track) throw new Error(`musicCatalog: no track "${title}" in ${mood}`);
+    return track;
+  });
+}
+
+/**
+ * Cozy Study's queue, assembled by hand.
+ *
+ * The scene used to play `mellow-groove`, which is over half Moonwalk's
+ * chillstep and downtempo-beat releases -- clap-driven, with builds and drops.
+ * That is fine music and wrong for a picture of someone studying: it pulls
+ * focus instead of holding it.
+ *
+ * So this is drawn from three places at once, because "cozy study" sits
+ * between a warm cafe and a quiet room: the unhurried half of `mellow-groove`,
+ * the coffee-shop warmth of `warm-lofi`, and the gentlest of `minimal-focus`.
+ * Nothing here has a drop in it.
+ *
+ * These tracks stay in their original moods too -- a recording can suit more
+ * than one scene, which is why ALL_TRACKS dedupes below.
+ */
+const STUDY_LOFI: Track[] = [
+  ...pick(
+    'mellow-groove',
+    'Laid-back Beat (Lofi Hip-hop)',
+    'Lo-FI Beat Chilled',
+    'Song Of Dusk',
+    'Galat Khabar',
+    'Follow Me',
+    '12/8/19',
+  ),
+  ...pick(
+    'warm-lofi',
+    'Cafezinho com Leite',
+    'Lazy Chill LoFi',
+    'Cascade',
+    'Another Year',
+  ),
+  ...pick(
+    'minimal-focus',
+    'Lofi Guitar Ambient',
+    'The Color Of Silence',
+    'I Find Peace in Your Eyes',
+    'For You',
+  ),
+];
+
+export const MOOD_TRACKS: Record<Mood, Track[]> = {
+  ...SOURCED,
+  'study-lofi': STUDY_LOFI,
+};
+
+/**
+ * Every distinct recording, deduped by id.
+ *
+ * `study-lofi` shares its tracks with the moods it was drawn from, so a plain
+ * flat() would count those twice and overstate the catalog in the About modal.
+ */
+export const ALL_TRACKS: Track[] = [
+  ...new Map(
+    Object.values(MOOD_TRACKS)
+      .flat()
+      .map((t) => [t.id, t] as const),
+  ).values(),
+];
 
 /** Resolve the queue for a scene: its mood playlist, or a custom source if set. */
 export function tracksForScene(scene: Scene): Track[] {
