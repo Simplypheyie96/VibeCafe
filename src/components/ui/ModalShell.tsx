@@ -15,24 +15,22 @@ export function ModalShell({ title, description, children, onClose }) {
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
       {/* Dim background */}
-      <div
-        className="absolute inset-0 bg-black/55 backdrop-blur-lg"
-        onClick={onClose}
-      />
+      <div className="scrim absolute inset-0" onClick={onClose} />
 
-      {/* Modal Container */}
+      {/* Modal Container. This carried its own `bg-black/40` with no
+          backdrop-filter at all -- the blur was only ever on the scrim behind
+          it -- so every modal read as a flat grey box in front of a frosted
+          page while the rest of the app was actual glass. */}
       <div
         className="
+          glass glass-deep
           relative
           w-full
           max-w-[500px]
           max-h-[75vh]
-          bg-black/40
-          border border-white/10
           rounded-[20px]
           overflow-hidden
           flex flex-col
-          shadow-[0_8px_32px_rgba(0,0,0,0.45)]
         "
       >
         {/* Header */}
@@ -50,7 +48,7 @@ export function ModalShell({ title, description, children, onClose }) {
                 <X size={20} />
               </button>
             </TooltipTrigger>
-            <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+            <TooltipContent sideOffset={6} className="tooltip-surface">
               Close
             </TooltipContent>
           </Tooltip>

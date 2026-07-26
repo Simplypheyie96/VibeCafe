@@ -127,7 +127,7 @@ export function AmbientButton({ type, isActive, onClick, style }: AmbientButtonP
       {/* Hover tooltip, desktop only -- suppressed where hover isn't real. */}
       <span
         aria-hidden="true"
-        className="ambient-tooltip pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]"
+        className="ambient-tooltip pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap tooltip-surface px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]"
       >
         {label}
       </span>

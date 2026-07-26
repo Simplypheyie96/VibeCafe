@@ -92,7 +92,7 @@ export function InstallPrompt() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="ios-install-title"
-        className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 px-4 pb-6 backdrop-blur-sm animate-fadeIn sm:items-center sm:pb-0"
+        className="fixed inset-0 z-[9999] flex items-end justify-center scrim px-4 pb-6 animate-fadeIn sm:items-center sm:pb-0"
         onClick={dismiss}
       >
         <div

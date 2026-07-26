@@ -4,13 +4,14 @@
 
 @import "tailwindcss";
 
+/* The four `--glass-*` tokens that used to live here were dead: nothing read
+   them, and one of them (`--glass-border`) collided by name with the real token
+   in the GLASS SURFACES block below, so whichever `:root` Tailwind emitted last
+   silently decided the app's border colour. The live tokens are all defined in
+   one place now. */
 @theme {
   --color-primary: #c27aff;
   --color-accent: #05df72;
-  --glass-bg: rgba(0,0,0,0.2);
-  --glass-border: rgba(255,255,255,0.2);
-  --glass-modal-bg: rgba(255,255,255,0.9);
-  --glass-light-bg: rgba(255,255,255,0.1);
 }
 
 /* ===============================
@@ -251,6 +252,80 @@ html, body {
    so a row of them doesn't stack into a dark band. */
 .glass-chip {
   --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+}
+
+/* Sections, fields and cards sitting *inside* a glass panel.
+ *
+ * Deliberately not `.glass`: a backdrop-filter nested inside another one only
+ * samples its parent's already-blurred paint, so it buys no depth and costs a
+ * second full-surface blur pass on every scroll frame. What these need is to
+ * read as a recess in the panel, which a plain translucent white does.
+ *
+ * There were 26 of these across the modals and they had drifted into six
+ * recipes -- white/5 and white/6 and white/10 as the fill, white/10 and
+ * white/15 and white/20 as the border, mixed within a single modal.
+ */
+.glass-inset {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* The interactive ones -- buttons, inputs, selectable options. Same recess,
+   plus the states. `:focus-within` rather than `:focus` so a field lights up
+   from its wrapper when the input inside it takes focus. */
+.glass-inset-interactive {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.glass-inset-interactive:hover {
+  background-color: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.26);
+}
+
+.glass-inset-interactive:focus,
+.glass-inset-interactive:focus-within {
+  background-color: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.4);
+  outline: none;
+}
+
+/* The on state for a segmented control or a selected option. Brighter fill and
+   a firmer edge than the hover state, so "selected" and "the pointer is over
+   this" never look like the same thing. */
+.glass-inset-selected {
+  background-color: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+}
+
+/* Tooltips. Seven of these existed across the app in four different materials
+   -- bg-zinc-900, black/80 unblurred, black/90 with blur-sm, black/90 with
+   blur-xl. Near-opaque on purpose: a tooltip is a label, and blurred scene
+   showing through it just makes 11px text harder to read. */
+:root {
+  --tooltip-bg: rgba(12, 12, 16, 0.93);
+}
+
+.tooltip-surface {
+  background-color: var(--tooltip-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* The dim behind any full-screen overlay. Four different ones were in use
+   (black/55 + blur-lg, black/60 + blur-sm twice, black/70 + blur-md), so
+   opening one overlay dimmed the page noticeably more than another. */
+.scrim {
+  background-color: rgba(0, 0, 0, 0.58);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 /* ============================

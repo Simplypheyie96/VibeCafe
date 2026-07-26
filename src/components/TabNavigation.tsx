@@ -156,7 +156,7 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
               </g>
             </svg>
           </button>
-          <div className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
+          <div className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap tooltip-surface px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
             Change scene
           </div>
         </div>
@@ -198,7 +198,7 @@ export function TabNavigation({ activeTab, onTabChange, onChangeScene, onOpenSet
               </defs>
             </svg>
           </button>
-          <div className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
+          <div className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap tooltip-surface px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
             Settings
           </div>
         </div>

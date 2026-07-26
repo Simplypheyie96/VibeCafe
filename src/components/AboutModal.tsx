@@ -52,7 +52,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
       {/* Designer Info Section */}
       <section className="modal-gap-3">
-        <div className="bg-white/5 border border-white/10 rounded-[12px] p-6">
+        <div className="glass-inset rounded-[12px] p-6">
           <div className="flex items-start gap-3">
             <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-3 rounded-[12px] shrink-0">
               <Palette className="size-6 text-white" strokeWidth={2} />
@@ -106,7 +106,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           </h3>
         </div>
         
-        <div className="bg-white/5 border border-white/10 rounded-[12px] p-3">
+        <div className="glass-inset rounded-[12px] p-3">
           <div className="card-section">
             {shortcuts.map((shortcut, index) => (
               <div key={index} className="flex items-center justify-between">
@@ -116,7 +116,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                 <div className="flex items-center gap-1">
                   {shortcut.keys.map((key, i) => (
                     <React.Fragment key={i}>
-                      <kbd className="bg-white/10 border border-white/20 rounded-md px-2 py-1 font-['Space_Grotesk',sans-serif] text-[12px] text-white/90 font-medium min-w-[28px] text-center">
+                      <kbd className="glass-inset rounded-md px-2 py-1 font-['Space_Grotesk',sans-serif] text-[12px] text-white/90 font-medium min-w-[28px] text-center">
                         {key}
                       </kbd>
                       {i < shortcut.keys.length - 1 && (
@@ -141,7 +141,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           </h3>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-[12px] p-6">
+        <div className="glass-inset rounded-[12px] p-6">
           <p className="font-['Space_Grotesk',sans-serif] text-[14px] text-white/80 leading-relaxed">
             All {ALL_TRACKS.length} built-in tracks are Creative Commons or public-domain
             releases, streamed from the Internet Archive's netlabels collection. The artist,
@@ -176,7 +176,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           </h3>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-[12px] p-6">
+        <div className="glass-inset rounded-[12px] p-6">
           <p className="font-['Space_Grotesk',sans-serif] text-[14px] text-white/80 leading-relaxed">
             No account, no sign-in, and nothing you make here leaves your browser. Usage is
             counted in aggregate with Google Analytics, which you're free to block.
@@ -212,7 +212,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
       {/* Footer Section */}
       <section className="modal-gap-3">
-        <div className="bg-white/5 border border-white/10 rounded-[12px] text-center p-6">
+        <div className="glass-inset rounded-[12px] text-center p-6">
           <p className="font-['Space_Grotesk',sans-serif] text-[13px] text-white/70 leading-relaxed mb-3">
             Made with ♥ for lofi music lovers everywhere
           </p>

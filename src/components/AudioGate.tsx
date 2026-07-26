@@ -48,7 +48,7 @@ export function AudioGate({ open, sceneName, onEnter }: AudioGateProps) {
       aria-modal="true"
       aria-labelledby="audio-gate-title"
       aria-describedby="audio-gate-desc"
-      className="absolute inset-0 z-[99999] flex items-center justify-center bg-black/70 px-6 backdrop-blur-md animate-fadeIn"
+      className="absolute inset-0 z-[99999] flex items-center justify-center scrim px-6 animate-fadeIn"
     >
       <div className="flex w-full max-w-[340px] flex-col items-center gap-6 rounded-[24px] border border-white/20 bg-white/10 px-7 py-9 text-center shadow-2xl shadow-black/50">
         {/* The cassette mark, drawn inline so the gate needs no network fetch. */}

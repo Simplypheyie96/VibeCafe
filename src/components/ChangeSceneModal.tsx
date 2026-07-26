@@ -138,8 +138,8 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
                 onClick={() => setImageSource('url')}
                 className={`flex-1 px-4 py-3 rounded-[12px] border transition-all ${
                   imageSource === 'url'
-                    ? 'bg-white/15 border-white/30 text-white'
-                    : 'bg-white/5 border-white/20 text-white/60 hover:bg-white/10'
+                    ? 'glass-inset-selected text-white'
+                    : 'glass-inset-interactive text-white/60'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -153,8 +153,8 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
                 onClick={() => setImageSource('upload')}
                 className={`flex-1 px-4 py-3 rounded-[12px] border transition-all ${
                   imageSource === 'upload'
-                    ? 'bg-white/15 border-white/30 text-white'
-                    : 'bg-white/5 border-white/20 text-white/60 hover:bg-white/10'
+                    ? 'glass-inset-selected text-white'
+                    : 'glass-inset-interactive text-white/60'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -171,13 +171,13 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://example.com/scene.jpg"
-                className="w-full px-4 py-3 rounded-[12px] bg-white/5 border border-white/20 text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+                className="w-full px-4 py-3 rounded-[12px] glass-inset-interactive text-[14px] text-white placeholder:text-white/40 "
               />
             )}
 
             {/* Upload Input */}
             {imageSource === 'upload' && (
-              <label className="flex items-center justify-center gap-2 w-full bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 rounded-[12px] px-4 py-3 cursor-pointer transition-all">
+              <label className="flex items-center justify-center gap-2 w-full glass-inset-interactive rounded-[12px] px-4 py-3 cursor-pointer transition-all">
                 <ImagePlus className="size-[18px] text-white/60" strokeWidth={2} />
                 <span className="font-['Space_Grotesk'] text-[14px] text-white/60">
                   {hasUploadedNewImage ? 'Image uploaded ✓' : 'Choose a file (max 5MB)'}
@@ -207,7 +207,7 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
                   value={musicUrl}
                   onChange={(e) => setMusicUrl(e.target.value)}
                   placeholder="https://example.com/lofi-stream.mp3"
-                  className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk'] text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+                  className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk'] text-[14px] text-white placeholder:text-white/40 "
                 />
                 <p className="font-['Space_Grotesk'] text-[12px] text-white/50">
                   Direct link to audio stream (MP3, OGG, etc.)
@@ -223,7 +223,7 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
                   value={trackTitle}
                   onChange={(e) => setTrackTitle(e.target.value)}
                   placeholder="e.g., Summer Vibes"
-                  className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk'] text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+                  className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk'] text-[14px] text-white placeholder:text-white/40 "
                   maxLength={50}
                 />
               </div>
@@ -237,7 +237,7 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
                   value={artistName}
                   onChange={(e) => setArtistName(e.target.value)}
                   placeholder="e.g., Lofi Dreams"
-                  className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk'] text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+                  className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk'] text-[14px] text-white placeholder:text-white/40 "
                   maxLength={50}
                 />
               </div>
@@ -263,7 +263,7 @@ export function ChangeSceneModal({ isOpen, onClose, currentScene, onChangeScene 
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded-[999px] bg-white/6 hover:bg-white/10 px-4 py-3 font-['Space_Grotesk'] text-[14px] font-medium text-white border border-white/15 transition-colors"
+                className="flex-1 rounded-[999px] glass-inset-interactive px-4 py-3 font-['Space_Grotesk'] text-[14px] font-medium text-white"
               >
                 Cancel
               </button>
