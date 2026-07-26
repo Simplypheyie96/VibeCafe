@@ -71,7 +71,7 @@ export function PlaylistButton({ name, service, isActive, onClick, style }: Play
         className={`relative size-14 md:size-16 rounded-full flex items-center justify-center transition-all duration-300 ${
           isActive
             ? `bg-gradient-to-br ${colors.gradient} shadow-lg ${colors.shadow}`
-            : 'bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/15 group-hover:border-white/30'
+            : 'glass glass-chip'
         }`}
       >
         <Music2
@@ -89,7 +89,7 @@ export function PlaylistButton({ name, service, isActive, onClick, style }: Play
 
       {/* Tooltip */}
       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-        <div className="bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+        <div className="tooltip-surface px-3 py-1.5 rounded-lg">
           <span className="font-['Space_Grotesk',sans-serif] text-[11px] text-white">
             {name}
           </span>

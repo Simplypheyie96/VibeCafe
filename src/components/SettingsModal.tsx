@@ -253,7 +253,7 @@ export function SettingsModal({
 
             <button
               onClick={handleReset}
-              className="w-full rounded-[999px] bg-white/6 hover:bg-white/10 py-2.5 px-4 font-['Space_Grotesk',sans-serif] text-[13px] font-medium text-white border border-white/15 transition-colors"
+              className="w-full rounded-[999px] glass-inset-interactive py-2.5 px-4 font-['Space_Grotesk',sans-serif] text-[13px] font-medium text-white"
             >
               Reset to Defaults
             </button>

@@ -1,0 +1,64 @@
+{
+  "id": "/",
+  "name": "VibeCafe — Lofi · Chill · Focus",
+  "short_name": "VibeCafe",
+  "description": "Your personal lofi space. Pick a scene, set the mood, and get into your flow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#1B1613",
+  "theme_color": "#1B1613",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["music", "entertainment", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-monochrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.webp",
+      "sizes": "1280x800",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "A scene playing on desktop, with ambient sounds and the scene picker"
+    },
+    {
+      "src": "/screenshot-narrow.webp",
+      "sizes": "430x932",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "A scene playing on mobile, with the ambient sound grid and now-playing card"
+    }
+  ]
+}

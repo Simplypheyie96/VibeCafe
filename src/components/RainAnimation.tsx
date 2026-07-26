@@ -4,26 +4,18 @@ interface RainAnimationProps {
   isActive: boolean;
 }
 
+/**
+ * Canvas only -- this component used to also stream a second rain track from
+ * pixabay at a hardcoded `volume = 0.3`, on top of the ambient rain <audio> that
+ * App.tsx already owns. Both were driven by `isRainActive`, so switching Rain on
+ * layered two different recordings, and the Rain slider moved only one of them:
+ * dragging it to zero left rain still audible with no way to stop it.
+ */
 export function RainAnimation({ isActive }: RainAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (!isActive) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      return;
-    }
-
-    // Play rain sound
-    if (!audioRef.current) {
-      audioRef.current = new Audio('https://cdn.pixabay.com/download/audio/2022/05/13/audio_257112ce99.mp3');
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.3;
-    }
-    audioRef.current.play();
+    if (!isActive) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -83,9 +75,6 @@ export function RainAnimation({ isActive }: RainAnimationProps) {
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
     };
   }, [isActive]);
 

@@ -50,7 +50,7 @@ export function PlaylistEmbedModal({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-[10px] transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2 glass-inset-interactive rounded-[10px] transition-all duration-200"
         >
           <span className="font-['Space_Grotesk',sans-serif] text-[13px] text-white">
             Open in App
@@ -61,7 +61,7 @@ export function PlaylistEmbedModal({
 
       {service === 'spotify' ? (
         /* Spotify can't be embedded without browser sign-in — iframe overlay is uncontrollable */
-        <div className="flex flex-col items-center gap-5 bg-white/5 border border-white/10 rounded-[16px] px-6 py-10 text-center">
+        <div className="flex flex-col items-center gap-5 glass-inset rounded-[16px] px-6 py-10 text-center">
           <div className="size-14 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-2xl">
             🎵
           </div>
@@ -90,7 +90,7 @@ export function PlaylistEmbedModal({
               Requires Apple Music subscription for full playback.
             </p>
           </div>
-          <div className="w-full h-[380px] bg-black/20 rounded-[12px] overflow-hidden border border-white/10">
+          <div className="w-full h-[380px] glass-inset rounded-[12px] overflow-hidden">
             <iframe
               src={embedUrl}
               width="100%"

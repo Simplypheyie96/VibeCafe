@@ -151,7 +151,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45]"
+            className="scrim fixed inset-0 z-[45]"
             onClick={() => setIsExpanded(false)}
           />
         )}
@@ -165,7 +165,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
           layout
           initial={false}
           animate={isExpanded ? { x: 0, y: 0 } : {}}
-          className={`pointer-events-auto bg-[rgba(0,0,0,0.4)] backdrop-blur-xl border border-[rgba(255,255,255,0.2)] shadow-[0px_10px_15px_0px_rgba(0,0,0,0.1),0px_4px_6px_0px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden ${
+          className={`pointer-events-auto glass glass-deep flex flex-col overflow-hidden ${
             isExpanded
               ? 'w-[90vw] max-w-[500px] rounded-[16px]'
               : 'w-[320px] rounded-[10px] absolute bottom-6 right-6 cursor-grab active:cursor-grabbing'
@@ -189,7 +189,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
                         <GripVertical className="size-[16px]" strokeWidth={2} />
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                    <TooltipContent sideOffset={6} className="tooltip-surface">
                       Drag to reposition
                     </TooltipContent>
                   </Tooltip>
@@ -219,7 +219,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
                         )}
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                    <TooltipContent sideOffset={6} className="tooltip-surface">
                       {isEmbedPlaying ? 'Pause' : 'Play'}
                     </TooltipContent>
                   </Tooltip>
@@ -240,7 +240,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
                       </svg>
                     </a>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                  <TooltipContent sideOffset={6} className="tooltip-surface">
                     Open in {getServiceName()}
                   </TooltipContent>
                 </Tooltip>
@@ -274,7 +274,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
                       )}
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                  <TooltipContent sideOffset={6} className="tooltip-surface">
                     {isExpanded ? 'Minimize player' : 'Expand player'}
                   </TooltipContent>
                 </Tooltip>
@@ -291,7 +291,7 @@ export function PlaylistEmbed({ name, service, embedId, onClose }: PlaylistEmbed
                       </svg>
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                  <TooltipContent sideOffset={6} className="tooltip-surface">
                     Close player
                   </TooltipContent>
                 </Tooltip>

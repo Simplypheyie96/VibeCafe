@@ -1,72 +1,119 @@
 import React from 'react';
-import svgPaths from '../imports/svg-bk0ntt4z9w';
+import { Pause, Play, Loader2, AlertTriangle, Music2 } from 'lucide-react';
+
+export type PlaybackState = 'idle' | 'buffering' | 'playing' | 'paused' | 'error';
 
 interface NowPlayingCardProps {
   trackTitle: string;
   artist: string;
-  isPlaying: boolean;
+  /** Human-readable licence, e.g. "CC BY 4.0". Rendered as the attribution line. */
+  license?: string;
+  /** Link back to the track's source page, required by CC BY 4.0 §3(a)(1). */
+  sourceUrl?: string;
+  state: PlaybackState;
   onPlayPause: () => void;
 }
 
-export function NowPlayingCard({ trackTitle, artist, isPlaying, onPlayPause }: NowPlayingCardProps) {
+export function NowPlayingCard({
+  trackTitle,
+  artist,
+  license,
+  sourceUrl,
+  state,
+  onPlayPause,
+}: NowPlayingCardProps) {
+  const isPlaying = state === 'playing';
+  const isBuffering = state === 'buffering';
+  const isError = state === 'error';
+
+  const statusLabel = isError
+    ? 'Playback problem'
+    : isBuffering
+      ? 'Buffering…'
+      : isPlaying
+        ? 'Now Playing'
+        : 'Paused';
+
   return (
-    <div className="now-playing-card absolute bg-[rgba(255,255,255,0.25)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)] flex flex-col z-30
-      left-4 right-4 bottom-[200px]
-      md:left-[31px] md:right-auto md:top-[534px] md:bottom-auto md:w-[221px]
-      rounded-[12px] md:rounded-[16.4px] shadow-xl shadow-black/30
-      sm:left-6 sm:right-6 sm:max-w-[400px]"
-      style={{ padding: '10px 16px' }}
+    // `bottom-[110px]` puts the card one 16px gap above the mobile carousel
+    // (which sits at 14px and stands 80px tall) so the two read as one bottom
+    // cluster. At 200px it floated mid-screen with a 100px hole underneath.
+    <div
+      className="now-playing-card glass rise-in rise-delay-2 absolute z-30 flex flex-col gap-2
+                 rounded-[14px] px-4 py-3.5
+                 left-4 right-4 bottom-[calc(110px+env(safe-area-inset-bottom,0px))]
+                 sm:left-6 sm:right-6 sm:max-w-[400px]
+                 md:left-[31px] md:right-auto md:top-[534px] md:bottom-auto md:w-[221px] md:rounded-[16px]"
     >
-      {/* Content Container */}
-      <div className="flex flex-col gap-[4px]">
-        {/* Now Playing label */}
-        <p className="font-['Space_Grotesk',sans-serif] font-normal text-[12px] md:text-[14px] text-[rgba(255,255,255,0.6)] tracking-[-0.1504px]">
-          Now Playing
+      {/* Status line */}
+      <div className="flex items-center gap-1.5">
+        {isError ? (
+          <AlertTriangle aria-hidden="true" className="size-3.5 text-amber-300" />
+        ) : isBuffering ? (
+          <Loader2 aria-hidden="true" className="size-3.5 animate-spin text-white/70" />
+        ) : (
+          <Music2 aria-hidden="true" className="size-3.5 text-white/60" />
+        )}
+        <p className="text-[11px] uppercase tracking-[0.09em] text-white/65 leading-none">
+          {statusLabel}
         </p>
-        
-        {/* Track title and Play/Pause button row */}
-        <div className="flex items-center justify-between gap-[12px]">
-          <p className="font-['Space_Grotesk',sans-serif] font-medium text-[14px] md:text-[16px] text-white tracking-[-0.3125px] overflow-hidden text-ellipsis whitespace-nowrap flex-1">
+      </div>
+
+      {/* Track + transport */}
+      <div className="flex items-center justify-between gap-3">
+        {/* Keyed on the title so React remounts it when the queue hands over,
+            which restarts the animation. Without the key the text would swap
+            between frames with no motion at all. */}
+        <div key={trackTitle} className="track-swap min-w-0 flex-1">
+          <p
+            className="truncate text-[15px] font-medium leading-snug tracking-[-0.2px] text-white"
+            title={trackTitle}
+          >
             {trackTitle}
           </p>
-          
-          {/* Play/Pause button */}
-          <div className="group relative shrink-0 flex items-center justify-center">
-            <button
-              onClick={onPlayPause}
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-              className="size-[24px] md:size-[20px] hover:scale-110 active:scale-95 transition-transform duration-200 flex items-center justify-center"
-            >
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
-                <g id="Icon">
-                  {isPlaying ? (
-                    <>
-                      <path d={svgPaths.p3bff1000} id="Vector" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                      <path d={svgPaths.p2916c800} id="Vector_2" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    </>
-                  ) : (
-                    <path d="M4 2.66667L12 8L4 13.3333V2.66667Z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                  )}
-                </g>
-              </svg>
-            </button>
-            <div className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[100]">
-              {isPlaying ? 'Pause' : 'Play'}
-            </div>
-          </div>
+          <p className="truncate text-[12.5px] leading-snug text-white/70" title={artist}>
+            {artist}
+          </p>
         </div>
+
+        {/* Play/pause only. The stream is continuous -- tracks hand over to the
+            next one on their own, so there is nothing for a skip control to do
+            that the app isn't already doing. */}
+        <button
+          type="button"
+          onClick={onPlayPause}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+          title={isPlaying ? 'Pause' : 'Play'}
+          className="flex size-11 shrink-0 items-center justify-center rounded-full text-white transition
+                     hover:bg-white/20 active:scale-95
+                     outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
+        >
+          {isPlaying
+            ? <Pause className="size-5" fill="currentColor" strokeWidth={0} />
+            : <Play className="size-5 translate-x-[1px]" fill="currentColor" strokeWidth={0} />}
+        </button>
       </div>
-      
-      {/* Music icon at bottom */}
-      <div className="relative shrink-0 size-[20px] md:size-[24px] mt-[6px] md:mt-[8px]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-          <g id="Icon">
-            <path d="M9 18V5L21 3V16" id="Vector" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.6" strokeWidth="2" />
-            <path d={svgPaths.p4141780} id="Vector_2" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.6" strokeWidth="2" />
-            <path d={svgPaths.p327d5700} id="Vector_3" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.6" strokeWidth="2" />
-          </g>
-        </svg>
-      </div>
+
+      {/* Attribution. Required by CC BY 4.0 §3(a)(1) whenever the track is licensed. */}
+      {license && (
+        <p className="text-[10.5px] leading-tight text-white/55">
+          {sourceUrl ? (
+            <a
+              href={sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer license"
+              className="underline decoration-white/30 underline-offset-2 transition hover:text-white/80
+                         outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
+            >
+              {license}
+            </a>
+          ) : (
+            license
+          )}
+          {' · '}
+          <span>Free to stream</span>
+        </p>
+      )}
     </div>
   );
 }

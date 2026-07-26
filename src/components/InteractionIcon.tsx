@@ -41,10 +41,8 @@ export function InteractionIcon({
     >
       {/* Icon container with glow - matching Figma design */}
       <div
-        className={`relative w-12 h-12 rounded-2xl backdrop-blur-xl transition-all duration-500 flex items-center justify-center ${
-          isActive
-            ? 'bg-white/30 ring-2 ring-white/60 shadow-2xl shadow-white/40'
-            : 'bg-black/20 border border-white/20 hover:bg-white/20 hover:border-white/40'
+        className={`glass glass-chip relative w-12 h-12 rounded-2xl transition-all duration-500 flex items-center justify-center ${
+          isActive ? 'ring-2 ring-white/60 shadow-2xl shadow-white/40' : ''
         }`}
         style={{
           transform: isHovered ? 'scale(1.15)' : 'scale(1)'
@@ -64,9 +62,9 @@ export function InteractionIcon({
 
       {/* Label tooltip */}
       {isHovered && (
-        <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-2 rounded-xl bg-black/90 backdrop-blur-xl text-white text-sm border border-white/20 shadow-xl animate-fade-in z-50">
+        <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap tooltip-surface px-4 py-2 animate-fade-in z-50">
           {interaction.label}
-          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-black/90 rotate-45 border-l border-t border-white/20" />
+          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[var(--tooltip-bg)] rotate-45 border-l border-t border-white/16" />
         </div>
       )}
 

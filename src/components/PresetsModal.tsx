@@ -54,7 +54,7 @@ export function PresetsModal({
               </span>
             </button>
           ) : (
-            <div className="bg-white/5 border border-white/20 rounded-[12px] p-6 modal-gap-3">
+            <div className="glass-inset rounded-[12px] p-6 modal-gap-3">
               <div className="field-group">
                 <label className="font-['Space_Grotesk',sans-serif] font-semibold text-[13px] text-white/70">
                   Preset Name
@@ -64,7 +64,7 @@ export function PresetsModal({
                   value={presetName}
                   onChange={(e) => setPresetName(e.target.value)}
                   placeholder="e.g., Late Night Study, Morning Coffee"
-                  className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+                  className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white placeholder:text-white/40 "
                   maxLength={30}
                   autoFocus
                 />
@@ -75,7 +75,7 @@ export function PresetsModal({
                     setShowSaveForm(false);
                     setPresetName('');
                   }}
-                  className="flex-1 rounded-[999px] bg-white/6 hover:bg-white/10 px-4 py-2.5 font-['Space_Grotesk',sans-serif] text-[13px] text-white border border-white/15 transition-colors"
+                  className="flex-1 rounded-[999px] glass-inset-interactive px-4 py-2.5 font-['Space_Grotesk',sans-serif] text-[13px] text-white"
                 >
                   Cancel
                 </button>
@@ -94,7 +94,7 @@ export function PresetsModal({
         {/* Presets List Section */}
         <div className="modal-gap-3">
           {presets.length === 0 ? (
-            <div className="bg-white/5 border border-white/10 rounded-[12px] p-10 text-center">
+            <div className="glass-inset rounded-[12px] p-10 text-center">
               <p className="font-['Space_Grotesk',sans-serif] text-[14px] text-white/60">
                 No saved presets yet. Create one to quickly restore your favorite vibes!
               </p>
@@ -104,7 +104,7 @@ export function PresetsModal({
               {presets.map((preset) => (
                 <div
                   key={preset.id}
-                  className="bg-white/5 hover:bg-white/10 border border-white/20 rounded-[12px] p-6 transition-all duration-200 group"
+                  className="glass-inset-interactive rounded-[12px] p-6 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0 modal-gap-2">
@@ -167,7 +167,7 @@ export function PresetsModal({
                             <Trash2 className="size-3.5 text-red-400" strokeWidth={2} />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                        <TooltipContent sideOffset={6} className="tooltip-surface">
                           Delete preset
                         </TooltipContent>
                       </Tooltip>

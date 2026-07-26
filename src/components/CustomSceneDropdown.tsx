@@ -53,18 +53,18 @@ export function CustomSceneDropdown({
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-4 md:left-1/2 md:-translate-x-1/2 bottom-[280px] md:bottom-auto md:top-[740px] z-50"
+      /* Sits one gap above the now-playing card, which now ends at 223px. At
+         280px it landed on top of the card. */
+      className="absolute left-4 md:left-1/2 md:-translate-x-1/2 z-50
+                 bottom-[calc(239px+env(safe-area-inset-bottom,0px))] md:bottom-auto md:top-[740px]"
     >
       {/* Dropdown Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          flex items-center gap-2 px-4 py-2.5 rounded-[12px]
-          bg-[rgba(255,255,255,0.2)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)]
-          hover:bg-[rgba(255,255,255,0.25)]
+          glass glass-chip flex items-center gap-2 px-4 py-2.5 rounded-[12px]
           transition-all duration-200
-          shadow-xl shadow-black/30
-          ${isCustomSceneActive ? 'border-[#c27aff] shadow-[0px_0px_16px_rgba(194,122,255,0.5)]' : ''}
+          ${isCustomSceneActive ? '!border-[#c27aff] shadow-[0px_0px_16px_rgba(194,122,255,0.5)]' : ''}
         `}
       >
         <span className="font-['Space_Grotesk',sans-serif] text-[13px] md:text-[14px] font-medium text-white">
@@ -91,8 +91,8 @@ export function CustomSceneDropdown({
           className="
             absolute top-full mt-2 left-0 
             min-w-[280px] max-w-[320px]
-            bg-black/40 backdrop-blur-xl border border-white/10
-            rounded-[12px] shadow-2xl
+            glass glass-deep
+            rounded-[12px]
             overflow-hidden
             animate-in fade-in slide-in-from-top-2 duration-200
           "

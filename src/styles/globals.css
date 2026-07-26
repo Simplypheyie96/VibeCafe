@@ -4,13 +4,14 @@
 
 @import "tailwindcss";
 
+/* The four `--glass-*` tokens that used to live here were dead: nothing read
+   them, and one of them (`--glass-border`) collided by name with the real token
+   in the GLASS SURFACES block below, so whichever `:root` Tailwind emitted last
+   silently decided the app's border colour. The live tokens are all defined in
+   one place now. */
 @theme {
   --color-primary: #c27aff;
   --color-accent: #05df72;
-  --glass-bg: rgba(0,0,0,0.2);
-  --glass-border: rgba(255,255,255,0.2);
-  --glass-modal-bg: rgba(255,255,255,0.9);
-  --glass-light-bg: rgba(255,255,255,0.1);
 }
 
 /* ===============================
@@ -21,7 +22,9 @@
   --app-height: 100%;
 }
 
-@media (max-width: 768px) {
+/* 767px, not 768px: Tailwind's `md` starts at min-width 768px, so using 768 here
+   made both the mobile and desktop rules apply at exactly 768px. */
+@media (max-width: 767px) {
   html, body {
     height: 100%;
     overflow: hidden;
@@ -45,6 +48,10 @@ html, body {
   min-height: 100%;
   padding: 0;
   margin: 0;
+  /* Mirrors the inline block in index.html. That one wins the race on a cold
+     load; this one keeps the page dark once the bundle has taken over. */
+  background-color: #1a1614;
+  color-scheme: dark;
   overflow-x: hidden;      /* kill horizontal scroll globally */
   overflow-y: auto;        /* allow normal vertical scroll */
   font-family: 'Space Grotesk', sans-serif;
@@ -176,6 +183,151 @@ html, body {
   background: rgba(194, 122, 255, 0.6);
 }
 
+/* Modal bodies are scroll containers, so their content is cut mid-line at the
+   top and bottom edges. Fading those edges reads as "there is more" rather than
+   as a rendering fault. */
+.modal-scroll-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+}
+
+/* ============================
+   GLASS SURFACES
+   ============================ */
+
+/* One frosted recipe for every panel in the app.
+ *
+ * These surfaces had drifted badly: six different base colours (white/10,
+ * white/15, white/20, black/20, black/28, black/40), four blur strengths
+ * (sm/md/lg/xl) and five border treatments including none at all. Some panels
+ * were tinted white and some black, so against the same wallpaper they read as
+ * different materials sitting at different depths.
+ *
+ * The recipe is the one the tab bar already used, since it survives the widest
+ * range of wallpapers: a dark tint for text contrast, a white lift over the top
+ * so the panel still reads as glass rather than a grey box, and a border bright
+ * enough to define an edge against a busy scene. Saturation is boosted slightly
+ * because heavy blur washes colour out of whatever is behind it.
+ */
+:root {
+  --glass-tint: rgba(0, 0, 0, 0.22);
+  --glass-lift: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.38);
+  --glass-blur: 24px;
+  --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.glass {
+  background-color: var(--glass-tint);
+  /* A flat gradient rather than a second colour: `background-color` is already
+     carrying the tint, and this layers the white lift over it in one paint. */
+  background-image: linear-gradient(var(--glass-lift), var(--glass-lift));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Menus and modals, which sit over content rather than beside it and need to
+   actually occlude what is behind them. */
+.glass-deep {
+  --glass-tint: rgba(0, 0, 0, 0.52);
+  --glass-blur: 28px;
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+}
+
+/* Small controls -- pills, chips, icon buttons. Same material, lighter shadow,
+   so a row of them doesn't stack into a dark band. */
+.glass-chip {
+  --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+}
+
+/* Sections, fields and cards sitting *inside* a glass panel.
+ *
+ * Deliberately not `.glass`: a backdrop-filter nested inside another one only
+ * samples its parent's already-blurred paint, so it buys no depth and costs a
+ * second full-surface blur pass on every scroll frame. What these need is to
+ * read as a recess in the panel, which a plain translucent white does.
+ *
+ * There were 26 of these across the modals and they had drifted into six
+ * recipes -- white/5 and white/6 and white/10 as the fill, white/10 and
+ * white/15 and white/20 as the border, mixed within a single modal.
+ */
+.glass-inset {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* The interactive ones -- buttons, inputs, selectable options. Same recess,
+   plus the states. `:focus-within` rather than `:focus` so a field lights up
+   from its wrapper when the input inside it takes focus. */
+.glass-inset-interactive {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.glass-inset-interactive:hover {
+  background-color: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.26);
+}
+
+.glass-inset-interactive:focus,
+.glass-inset-interactive:focus-within {
+  background-color: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.4);
+  outline: none;
+}
+
+/* The on state for a segmented control or a selected option. Brighter fill and
+   a firmer edge than the hover state, so "selected" and "the pointer is over
+   this" never look like the same thing. */
+.glass-inset-selected {
+  background-color: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+}
+
+/* Tooltips. Seven of these existed across the app in four different materials
+   -- bg-zinc-900, black/80 unblurred, black/90 with blur-sm, black/90 with
+   blur-xl. Near-opaque on purpose: a tooltip is a label, and blurred scene
+   showing through it just makes 11px text harder to read. */
+:root {
+  --tooltip-bg: rgba(12, 12, 16, 0.93);
+}
+
+.tooltip-surface {
+  background-color: var(--tooltip-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* The dim behind any full-screen overlay. Four different ones were in use
+   (black/55 + blur-lg, black/60 + blur-sm twice, black/70 + blur-md), so
+   opening one overlay dimmed the page noticeably more than another. */
+.scrim {
+  background-color: rgba(0, 0, 0, 0.58);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
 /* ============================
    CUSTOM ANIMATIONS
    ============================ */
@@ -201,6 +353,74 @@ html, body {
 .animate-scene-motion {
   animation: scene-motion 60s ease-in-out infinite;
   will-change: transform;
+}
+
+/* The outgoing scene during a change. It recedes and softens rather than simply
+   disappearing, so the new scene reads as arriving in front of it.
+
+   This sits on a wrapper, not on the <img>: the image is already running the
+   60s ken-burns loop, and two animations competing for `transform` on one
+   element means the last one declared silently wins. */
+@keyframes scene-dissolve {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(7px);
+  }
+}
+
+.scene-outgoing {
+  animation: scene-dissolve 900ms cubic-bezier(0.33, 0, 0.2, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+
+/* Chrome arriving after the loading screen clears. Panels rise in sequence
+   instead of the whole interface appearing in one frame. */
+/* Ends on `transform: none`, not `translateY(0)`. With `animation-fill-mode:
+   both` the final frame is retained, and any transform -- even a zero one --
+   makes the element a containing block for absolutely positioned descendants.
+   These panels have plenty of those, so the transform has to actually go away. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in {
+  animation: rise-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.rise-delay-1 { animation-delay: 80ms; }
+.rise-delay-2 { animation-delay: 160ms; }
+.rise-delay-3 { animation-delay: 240ms; }
+.rise-delay-4 { animation-delay: 320ms; }
+
+/* A track handing over to the next one. The queue is continuous and has no
+   skip control, so this is the only signal that anything changed -- without it
+   the title swaps between frames and the stream looks frozen. */
+@keyframes track-swap {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.track-swap {
+  animation: track-swap 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes fadeIn {
@@ -290,7 +510,7 @@ button {
 }
 
 /* Larger touch targets for mobile sliders */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   input[type="range"]::-webkit-slider-thumb {
     width: 20px !important;
     height: 20px !important;
@@ -321,10 +541,13 @@ button {
    ============================ */
 
 @media (max-width: 767px) {
-  /* Container: sit closer to bottom, leave padding on both sides */
+  /* Container: sit above the home indicator, leave padding on both sides */
   .carousel-wrap {
-    bottom: 14px !important;
-    max-width: calc(100vw - 24px) !important;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+    /* 32px, not 24px: this is the shared mobile gutter. The nav row and the
+       now-playing card both sit 16px from each edge, and at 24px the carousel
+       was the one element reaching 4px wider than the stack above it. */
+    max-width: calc(100vw - 32px) !important;
     width: 100% !important;
   }
 
@@ -347,21 +570,153 @@ button {
   }
 }
 
-/* ============================
-   AMBIENT BUTTON STYLES
-   ============================ */
-
-/* Ambient button styles - transparent on mobile, glassmorphic on desktop */
-.ambient-button {
-  background: transparent;
-  border: 1.5px solid transparent;
-  box-shadow: none;
+@media (min-width: 768px) {
+  .carousel-wrap {
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
+/* Fade the scroll row out at both edges so it reads as scrollable rather than
+   as thumbnails cut off by the viewport. The mask is dropped once the row fits
+   entirely on screen (no overflow => nothing to hint at). */
+.carousel-inner {
+  scroll-padding-inline: 24px;
+  overscroll-behavior-x: contain;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 22px,
+    #000 calc(100% - 22px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 22px,
+    #000 calc(100% - 22px),
+    transparent 100%
+  );
+}
+
+.carousel-inner[data-overflowing='false'] {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* ============================
+   AMBIENT DOCK
+   One set of nine controls, two layouts. Desktop scatters them loosely over the
+   scene at the positions carried on each slot as --dx/--dy; mobile lays the same
+   nine nodes out as a centred 3x3 grid between the genre tags and the now-playing
+   card. Previously these were two duplicated sets of buttons in the markup.
+   ============================ */
+
+.ambient-dock {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.ambient-dock-slot {
+  pointer-events: auto;
+}
+
+/* --- Desktop: free scatter --- */
 @media (min-width: 768px) {
-  .ambient-button:not(.active-button) {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1.5px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  .ambient-dock-slot {
+    position: absolute;
+    left: var(--dx);
+    top: var(--dy);
+  }
+
+  /* The centre control is nudged onto the exact middle of the scene. */
+  .ambient-dock-slot:nth-child(5) {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* --- Mobile: scatter, inside a band that clears the other chrome ---
+   These were briefly a 3x3 grid, which read as a keypad bolted onto a
+   photograph. The band is bounded rather than the buttons being pinned to
+   viewport percentages: `--mx`/`--my` resolve against the free space between
+   the genre tags and the now-playing card, so the scatter re-spreads with the
+   screen instead of drifting into the chrome above or below it. */
+@media (max-width: 767px) {
+  .ambient-dock {
+    top: calc(148px + env(safe-area-inset-top, 0px));
+    bottom: calc(252px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+  }
+
+  .ambient-dock-slot {
+    position: absolute;
+    left: var(--mx);
+    top: var(--my);
+    /* Centre-anchored horizontally: `--mx` is where the icon sits, not where
+       its box starts, which is what keeps the columns visually irregular
+       rather than irregular-by-a-label-width. */
+    transform: translateX(-50%);
+  }
+}
+
+/* The desktop card is pinned at 534px, which is where the design puts it on a
+   tall window. On a short one (a 1280x800 laptop) that fixed offset ran the card
+   straight through the scene carousel. The cap only engages below ~914px of
+   viewport height, so the intended position is untouched everywhere else. */
+@media (min-width: 768px) {
+  .now-playing-card {
+    top: min(534px, calc(100dvh - 380px));
+  }
+}
+
+/* Short labels ride under the icons on mobile only. */
+@media (min-width: 768px) {
+  .ambient-label {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 640px) {
+  .ambient-label {
+    display: none;
+  }
+
+  .ambient-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Hover tooltips are dead weight on touch -- they can never be triggered. */
+@media (hover: none), (max-width: 767px) {
+  .ambient-tooltip {
+    display: none;
+  }
+}
+
+/* The ambient buttons used to carry their own transparent-on-mobile,
+   glassmorphic-on-desktop rules here, which fought the inline styles on the
+   element and lost. They now use the shared `.glass` recipe like everything
+   else, so there is nothing left to override. */
+
+/* ============================
+   FOCUS VISIBILITY
+   Keyboard users had no focus indication anywhere in the app.
+   ============================ */
+
+:where(button, a, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

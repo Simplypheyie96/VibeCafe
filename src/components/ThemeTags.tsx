@@ -27,7 +27,7 @@ export function ThemeTags({ activeTags }: ThemeTagsProps) {
       {displayTags.map((tag, index) => (
         <div
           key={`${tag.label}-${index}`}
-          className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-xl flex items-center gap-2 h-[30px]"
+          className="glass glass-chip px-3 py-1.5 rounded-full flex items-center gap-2 h-[30px]"
         >
           {tag.active && (
             <div className="w-2 h-2 rounded-full bg-[#05df72] opacity-[0.691]" />

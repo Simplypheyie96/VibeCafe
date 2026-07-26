@@ -112,7 +112,7 @@ export function MyPlaylistsModal({
               {customPlaylists.map((playlist) => (
                 <div
                   key={playlist.id}
-                  className="bg-white/5 border border-white/20 rounded-[16px] p-6 transition-all duration-200"
+                  className="glass-inset rounded-[16px] p-6 transition-all duration-200"
                 >
                   <div className="modal-gap-4">
                     {/* Playlist Header */}
@@ -156,7 +156,7 @@ export function MyPlaylistsModal({
                               <Play className="size-4 text-white/60" fill="currentColor" strokeWidth={0} />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                          <TooltipContent sideOffset={6} className="tooltip-surface">
                             Play
                           </TooltipContent>
                         </Tooltip>
@@ -172,7 +172,7 @@ export function MyPlaylistsModal({
                               <Edit2 className="size-4 text-white/60" strokeWidth={2} />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                          <TooltipContent sideOffset={6} className="tooltip-surface">
                             Assign to scene
                           </TooltipContent>
                         </Tooltip>
@@ -189,7 +189,7 @@ export function MyPlaylistsModal({
                               <Trash2 className="size-4 text-white/60 hover:text-red-400" strokeWidth={2} />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent sideOffset={6} className="bg-zinc-900 text-white/90 border border-white/15 font-['Space_Grotesk',sans-serif] text-[11px]">
+                          <TooltipContent sideOffset={6} className="tooltip-surface">
                             Delete
                           </TooltipContent>
                         </Tooltip>
@@ -198,14 +198,14 @@ export function MyPlaylistsModal({
 
                     {/* Scene Assignment */}
                     {editingPlaylistId === playlist.id ? (
-                      <div className="bg-white/5 border border-white/20 rounded-[10px] p-4 card-section">
+                      <div className="glass-inset rounded-[10px] p-4 card-section">
                         <label className="block font-['Space_Grotesk',sans-serif] text-[12px] text-white/70 font-medium">
                           Attach to Scene
                         </label>
                         <select
                           value={editSceneId === null ? '' : editSceneId}
                           onChange={(e) => setEditSceneId(e.target.value ? Number(e.target.value) : null)}
-                          className="w-full bg-white/5 border border-white/20 rounded-[8px] px-3 py-2 font-['Space_Grotesk',sans-serif] text-[13px] text-white focus:outline-none focus:border-white/40 transition-colors cursor-pointer"
+                          className="w-full glass-inset-interactive rounded-[8px] px-3 py-2 font-['Space_Grotesk',sans-serif] text-[13px] text-white  cursor-pointer"
                         >
                           <option value="">No scene</option>
                           <optgroup label="Default Scenes">
@@ -231,7 +231,7 @@ export function MyPlaylistsModal({
                               setEditingPlaylistId(null);
                               setEditSceneId(null);
                             }}
-                            className="flex-1 bg-white/10 hover:bg-white/15 rounded-[8px] px-3 py-2 transition-all"
+                            className="flex-1 glass-inset-interactive rounded-[8px] px-3 py-2 transition-all"
                           >
                             <span className="font-['Space_Grotesk',sans-serif] text-[13px] text-white font-medium">
                               Cancel
@@ -274,7 +274,7 @@ export function MyPlaylistsModal({
                 href={playlist.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/30 rounded-[16px] p-6 transition-all duration-200 group block"
+                className="glass-inset-interactive rounded-[16px] p-6 transition-all duration-200 group block"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start flex-1 gap-3.5">
@@ -291,7 +291,7 @@ export function MyPlaylistsModal({
                       </p>
                       
                       <div className="flex items-center pt-1">
-                        <div className="bg-white/10 border border-white/10 rounded-full px-2.5 py-1">
+                        <div className="glass-inset rounded-full px-2.5 py-1">
                           <span className="font-['Space_Grotesk',sans-serif] font-medium text-[10px] text-white/70 uppercase tracking-wider">
                             {playlist.platform}
                           </span>

@@ -2,14 +2,66 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>VibeCafe — Lofi · Chill · Focus</title>
     <meta name="description" content="Your personal lofi space. Pick a scene, set the mood, and get into your flow." />
+
+    <!-- Painted before anything else loads. Without this the browser shows its
+         default white canvas from first paint until React mounts and the loading
+         screen's own background takes over -- a white flash on every cold load.
+         `color-scheme` keeps form controls, scrollbars and overscroll dark too. -->
+    <style>
+      html, body { background-color: #1a1614; color-scheme: dark; }
+    </style>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#1B1613" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="VibeCafe" />
+
+    <!-- Typography. Space Grotesk is referenced by every component but was never
+         actually loaded, so until now every visitor saw the system sans-serif. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!--
+      The music and the three self-hosted ambient clips both come from jsDelivr,
+      so one handshake covers all of it. Getting it out of the way during boot is
+      worth more here than usual: the first track starts loading immediately,
+      before the audio gate is even tapped.
+
+      This used to point at archive.org, whose /download/ path 302s to a
+      per-item storage node -- two full TLS handshakes, ~2.7s to first byte, no
+      cache-control at all, and 5.2s before a track was playable. The catalog
+      moved; see the note at the top of src/data/musicCatalog.ts.
+    -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <!-- Loaded without blocking first paint: as a render-blocking <link> this
+         held the whole page white until Google responded. `display=swap` already
+         means text renders in the fallback face and swaps when the font lands,
+         so nothing is lost by not waiting for it. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'; this.onload=null;"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <link rel="apple-touch-icon" href="/favicon-192.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

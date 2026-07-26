@@ -155,7 +155,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., My Lofi Vibes"
-              className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+              className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white placeholder:text-white/40 "
               maxLength={40}
             />
           </div>
@@ -168,7 +168,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
             <select
               value={sceneId === null ? '' : sceneId}
               onChange={(e) => setSceneId(e.target.value ? Number(e.target.value) : null)}
-              className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all cursor-pointer"
+              className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white  cursor-pointer"
             >
               <option value="">No scene (general playlist)</option>
               <optgroup label="Default Scenes">
@@ -205,7 +205,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-[12px] border transition-all ${
                   service === 'spotify'
                     ? 'bg-green-500/20 border-green-500/40 text-white'
-                    : 'bg-white/5 border-white/20 text-white/60 hover:bg-white/10'
+                    : 'glass-inset-interactive text-white/60'
                 }`}
               >
                 <div className={`size-[18px] rounded-full ${service === 'spotify' ? 'bg-green-500' : 'bg-white/20'}`} />
@@ -217,7 +217,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-[12px] border transition-all ${
                   service === 'apple-music'
                     ? 'bg-pink-500/20 border-pink-500/40 text-white'
-                    : 'bg-white/5 border-white/20 text-white/60 hover:bg-white/10'
+                    : 'glass-inset-interactive text-white/60'
                 }`}
               >
                 <div className={`size-[18px] rounded-full ${service === 'apple-music' ? 'bg-pink-500' : 'bg-white/20'}`} />
@@ -229,7 +229,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-[12px] border transition-all ${
                   service === 'youtube'
                     ? 'bg-red-500/20 border-red-500/40 text-white'
-                    : 'bg-white/5 border-white/20 text-white/60 hover:bg-white/10'
+                    : 'glass-inset-interactive text-white/60'
                 }`}
               >
                 <div className={`size-[18px] rounded-full ${service === 'youtube' ? 'bg-red-500' : 'bg-white/20'}`} />
@@ -241,7 +241,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-[12px] border transition-all ${
                   service === 'soundcloud'
                     ? 'bg-orange-500/20 border-orange-500/40 text-white'
-                    : 'bg-white/5 border-white/20 text-white/60 hover:bg-white/10'
+                    : 'glass-inset-interactive text-white/60'
                 }`}
               >
                 <div className={`size-[18px] rounded-full ${service === 'soundcloud' ? 'bg-orange-500' : 'bg-white/20'}`} />
@@ -268,7 +268,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
                       ? 'https://www.youtube.com/watch?v=...'
                       : 'https://soundcloud.com/tracks/...'
               }
-              className="w-full bg-white/5 border border-white/20 rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
+              className="w-full glass-inset-interactive rounded-[12px] px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] text-white placeholder:text-white/40 "
             />
             <p className="font-['Space_Grotesk',sans-serif] text-[12px] text-white/50">
               Copy the share link from {service === 'spotify' ? 'Spotify' : service === 'apple-music' ? 'Apple Music' : service === 'youtube' ? 'YouTube' : 'SoundCloud'}
@@ -288,7 +288,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
 
           {/* How to Find URL Section */}
           <div className="modal-gap-3">
-            <details className="bg-white/5 border border-white/10 rounded-[12px] p-6">
+            <details className="glass-inset rounded-[12px] p-6">
               <summary className="font-['Space_Grotesk',sans-serif] text-[13px] font-medium text-white/70 cursor-pointer hover:text-white/90 transition-colors">
                 How to get the playlist URL?
               </summary>
@@ -334,7 +334,7 @@ export function AddPlaylistModal({ isOpen, onClose, onAddPlaylist, scenes, custo
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded-[999px] bg-white/6 hover:bg-white/10 px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] font-medium text-white border border-white/15 transition-colors"
+                className="flex-1 rounded-[999px] glass-inset-interactive px-4 py-3 font-['Space_Grotesk',sans-serif] text-[14px] font-medium text-white"
               >
                 Cancel
               </button>

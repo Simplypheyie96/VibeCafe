@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import backgroundImg from 'figma:asset/718793307914dbf89f1f24aded5dc3a91340a13f.png';
+// Served from public/ rather than imported: this is the first thing painted, and
+// the Figma original is a 2.9 MB 5824px PNG. See scripts/build-scene-images.py.
+const backgroundImg = '/scenes/loading-bg.webp';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
