@@ -12,7 +12,7 @@
  *
  * Bump CACHE to invalidate everything.
  */
-const CACHE = 'vibecafe-v1';
+const CACHE = 'vibecafe-v2';
 
 // The shell needed to boot offline. Hashed build assets are not listed -- they
 // are picked up opportunistically by the fetch handler instead, so this list
@@ -67,10 +67,33 @@ self.addEventListener('fetch', (event) => {
 
   // Build output under /assets is content-hashed, so a cache hit can never be
   // stale -- a changed file has a different filename.
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      (async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        try {
+          const fresh = await fetch(request);
+          if (fresh.ok && fresh.type === 'basic') {
+            const cache = await caches.open(CACHE);
+            cache.put(request, fresh.clone());
+          }
+          return fresh;
+        } catch {
+          return Response.error();
+        }
+      })(),
+    );
+    return;
+  }
+
+  // Everything else same-origin -- the icons, the manifest, the favicon -- has a
+  // stable filename, so a cache hit CAN be stale and cache-first would pin the
+  // first version a visitor ever saw. That is not hypothetical: it is why the
+  // old vinyl icon outlived the tape one. Network first, falling back to cache
+  // only when offline, so a new icon or manifest is picked up on the next load.
   event.respondWith(
     (async () => {
-      const cached = await caches.match(request);
-      if (cached) return cached;
       try {
         const fresh = await fetch(request);
         if (fresh.ok && fresh.type === 'basic') {
@@ -79,7 +102,7 @@ self.addEventListener('fetch', (event) => {
         }
         return fresh;
       } catch {
-        return Response.error();
+        return (await caches.match(request)) ?? Response.error();
       }
     })(),
   );
