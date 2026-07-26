@@ -163,10 +163,10 @@ function App() {
 
   const currentTrack = player.track ?? currentScene.playlist[0];
 
-  // Set page title
-  useEffect(() => {
-    document.title = "VibeCafe - Lofi Music & Ambient Sounds";
-  }, []);
+  /* The title is set once in index.html and deliberately not touched here. It
+     has to agree with og:title, twitter:title and the manifest name, and the
+     last component to run should not get to decide which of those wins -- that
+     is how the icon ended up pointing at the social card. */
 
   // Viewport height fix — uses visualViewport so iOS Safari URL-bar show/hide is tracked
   useEffect(() => {
