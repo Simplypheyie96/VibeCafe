@@ -178,13 +178,13 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
         <div className="glass-inset rounded-[12px] p-6">
           <p className="font-['Space_Grotesk',sans-serif] text-[14px] text-white/80 leading-relaxed">
-            No account, no sign-in, and nothing you make here leaves your browser. Usage is
-            counted in aggregate with Google Analytics, which you're free to block.
+            No account, no sign-in, and nothing you make here leaves your browser. There is
+            no analytics, no tracking, and no cookies.
           </p>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2.5 mt-6">
             <a
-              href={`${REPO}/PRIVACY.md`}
+              href="/privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="font-['Space_Grotesk',sans-serif] text-[13px] text-purple-300 hover:text-purple-200 inline-flex items-center gap-2 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
@@ -193,7 +193,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
               <ExternalLink className="size-3.5" strokeWidth={2} />
             </a>
             <a
-              href={`${REPO}/TERMS.md`}
+              href="/terms"
               target="_blank"
               rel="noopener noreferrer"
               className="font-['Space_Grotesk',sans-serif] text-[13px] text-purple-300 hover:text-purple-200 inline-flex items-center gap-2 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
@@ -204,8 +204,14 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           </div>
 
           <p className="font-['Space_Grotesk',sans-serif] text-[12px] text-white/40 leading-relaxed mt-6 border-t border-white/10 pt-5">
-            These are starter drafts and have not been reviewed by a lawyer. Get
-            professional review before relying on them.
+            Published by Ajayi Feyikemi Mabel. Questions about either document go to{' '}
+            <a
+              href="mailto:ajayifey@gmail.com"
+              className="text-white/60 hover:text-white/80 underline underline-offset-2 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+            >
+              ajayifey@gmail.com
+            </a>
+            .
           </p>
         </div>
       </section>

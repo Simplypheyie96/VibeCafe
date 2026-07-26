@@ -1,0 +1,270 @@
+/*
+ * Shared styling for /privacy and /terms.
+ *
+ * These pages are deliberately not the app: no glass, no blur, no gradients.
+ * A legal document is read start to finish, so it gets a single measured
+ * column, flat high-contrast type and nothing that competes with the words.
+ * Ground and cream are the app's own two values, so it still reads as VibeCafe.
+ *
+ * Dark only, on purpose -- index.html commits the whole product to
+ * `color-scheme: dark`, and a legal page that flipped to white in light mode
+ * would look like it belonged to a different site.
+ */
+
+:root {
+  --ground: #1b1613;
+  --raised: #221c18;
+  --cream: #e8dcc4;
+  --muted: #9c9184;
+  --rule: #342c26;
+  --link: #d8c9a8;
+  --measure: 68ch;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ground);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0 1.5rem 6rem;
+  background: var(--ground);
+  color: var(--cream);
+  font-family: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.wrap {
+  max-width: var(--measure);
+  margin: 0 auto;
+}
+
+/* ---- masthead ---------------------------------------------------------- */
+
+header {
+  padding: 4.5rem 0 0;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  padding: 0.35rem 0;
+}
+
+.back:hover,
+.back:focus-visible {
+  color: var(--cream);
+}
+
+h1 {
+  font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.6rem);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin: 2rem 0 0.75rem;
+}
+
+.updated {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.lede {
+  font-size: 1.0625rem;
+  color: var(--cream);
+  margin: 2rem 0 0;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 3.5rem 0;
+}
+
+/* ---- body -------------------------------------------------------------- */
+
+h2 {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin: 3.25rem 0 1rem;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--cream);
+  margin: 2.25rem 0 0.75rem;
+}
+
+p {
+  margin: 0 0 1.25rem;
+}
+
+ul {
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+}
+
+li {
+  margin-bottom: 0.6rem;
+}
+
+li::marker {
+  color: var(--muted);
+}
+
+strong {
+  font-weight: 600;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--rule);
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-color: var(--link);
+}
+
+/* Long URLs and emails must not push the page sideways on a phone. Deliberately
+   not applied to `code` -- a storage key broken across two lines mid-word is
+   unreadable, and the scroll containers below handle the width instead. */
+a {
+  overflow-wrap: anywhere;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+/* ---- tables ------------------------------------------------------------ */
+
+/* Tables are the one thing here that can outgrow a phone, so each gets its
+   own scroll container rather than letting the page scroll sideways. */
+.scroll {
+  overflow-x: auto;
+  margin: 0 0 1.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 34rem;
+  font-size: 0.9375rem;
+}
+
+/* Storage keys and hostnames stay on one line; the container scrolls instead. */
+td code {
+  white-space: nowrap;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--raised);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ---- callout ----------------------------------------------------------- */
+
+.note {
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 1.5rem 1.75rem;
+  margin: 0 0 1.75rem;
+}
+
+.note :last-child {
+  margin-bottom: 0;
+}
+
+/* ---- footer ------------------------------------------------------------ */
+
+footer {
+  margin-top: 4.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+footer a {
+  color: var(--muted);
+}
+
+footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .back,
+  footer nav {
+    display: none;
+  }
+  a {
+    color: #000;
+  }
+  .note,
+  .scroll {
+    border-color: #999;
+  }
+  th {
+    background: #eee;
+    color: #000;
+  }
+}

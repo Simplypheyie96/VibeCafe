@@ -12,12 +12,18 @@
  *
  * Bump CACHE to invalidate everything.
  */
-const CACHE = 'vibecafe-v2';
+const CACHE = 'vibecafe-v3';
 
 // The shell needed to boot offline. Hashed build assets are not listed -- they
 // are picked up opportunistically by the fetch handler instead, so this list
 // never goes out of date with the build.
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/favicon.svg'];
+
+// Standalone documents that are NOT the app shell. They are served by rewrites
+// in vercel.json from their own HTML files, so a navigation to one returns the
+// policy rather than the SPA -- which the navigation handler below has to know
+// about before it decides what to cache the response as.
+const LEGAL = new Set(['/privacy', '/terms', '/privacy.html', '/terms.html']);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -42,23 +48,31 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Music streams from the Internet Archive, analytics, and anything else
-  // cross-origin are left entirely alone. Caching audio here would blow through
-  // storage quota and break range requests, which is how seeking works.
+  // Music comes from jsDelivr, ambient sound from Mixkit and raw.githack.com,
+  // fonts from Google -- everything cross-origin is left entirely alone. Caching
+  // audio here would blow through storage quota and break range requests, which
+  // is how seeking works.
   if (url.origin !== self.location.origin) return;
 
   // Navigations: network first, so a new deploy is picked up immediately. The
-  // cached shell is only a fallback for being offline.
+  // cached copy is only a fallback for being offline.
   if (request.mode === 'navigate') {
+    // Which key this navigation's HTML belongs under. Every app path renders the
+    // same SPA document, so they all refresh the one '/index.html' entry. The
+    // legal pages are separate documents and must key on themselves -- storing
+    // /privacy as the shell would serve the policy in place of the app the next
+    // time someone opened VibeCafe offline.
+    const key = LEGAL.has(url.pathname) ? url.pathname : '/index.html';
+
     event.respondWith(
       (async () => {
         try {
           const fresh = await fetch(request);
           const cache = await caches.open(CACHE);
-          cache.put('/index.html', fresh.clone());
+          cache.put(key, fresh.clone());
           return fresh;
         } catch {
-          return (await caches.match('/index.html')) ?? Response.error();
+          return (await caches.match(key)) ?? Response.error();
         }
       })(),
     );
